@@ -21,8 +21,8 @@ public class Train {
     @ColumnInfo(name="end_station_id")
     public long endStationId;
 
-    @ColumnInfo(name = "midstations")
-    public String midStations;
+    @ColumnInfo(name="name")
+    public String name;
 
     @ColumnInfo(name="is_fast")
     public boolean isFastTrain;
@@ -30,13 +30,12 @@ public class Train {
     @Ignore
     private List<Arrival> mMidStations;
 
-    public Train(long id, long startStationId, long endStationId, String midStations, boolean isFastTrain) {
+    public Train(long id, String name,long startStationId, long endStationId, boolean isFastTrain) {
         this.id = id;
         this.startStationId = startStationId;
         this.endStationId = endStationId;
-        this.midStations = midStations;
         this.isFastTrain = isFastTrain;
-
+        this.name = name;
     }
 
     @Ignore

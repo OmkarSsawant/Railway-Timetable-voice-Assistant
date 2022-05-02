@@ -2,6 +2,7 @@ package com.visionDev.traintimetableassistant.data;
 
 import androidx.room.TypeConverter;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -23,5 +24,11 @@ public  class DateTimeTypeConvertors {
             e.printStackTrace();
             return  null;
         }
+    }
+
+
+    @TypeConverter
+    public String timestampToString(Timestamp ts){
+        return  df.format(new Date(ts.getTime()));
     }
 }

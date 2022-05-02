@@ -25,8 +25,7 @@ public interface TrainDAO {
     @Query(value = "SELECT name FROM Line WHERE id = :line_id")
     String getLineName( long line_id);
 
-    @Query(value = "SELECT * FROM Arrival WHERE id = :train_id ORDER BY DATE(arrival_time)")
-    @TypeConverters(value = {DateTimeTypeConvertors.class})
+    @Query(value = "SELECT * FROM Arrival WHERE trainId = :train_id ORDER BY DATE(arrival_time)")
     List<Arrival> getMidStationsOfTrain(long train_id);
 
 
@@ -35,19 +34,19 @@ public interface TrainDAO {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    boolean addStation(Station s);
+    long addStation(Station s);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    boolean addTrain(Train t);
+    long addTrain(Train t);
 
     @Update
-    boolean updateTrain(Train t);
+    int updateTrain(Train t);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    boolean addLine(Line l);
+    long addLine(Line l);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    boolean addMidStation(Arrival ms);
+    long addArrival(Arrival ms);
 
 
 

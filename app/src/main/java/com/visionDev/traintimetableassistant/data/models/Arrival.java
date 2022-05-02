@@ -9,6 +9,10 @@ import java.util.Date;
 
 @Entity
 public class Arrival {
+
+    @PrimaryKey(autoGenerate = true)
+    public long id;
+
     @ColumnInfo
     public long trainId;
 

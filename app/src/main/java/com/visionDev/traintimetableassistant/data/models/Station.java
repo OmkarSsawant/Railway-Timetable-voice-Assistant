@@ -9,6 +9,9 @@ public class Station {
     @PrimaryKey(autoGenerate = true)
     public  long id;
 
+    @ColumnInfo(name="station_no")
+    public long stationNo;
+
     @ColumnInfo(name="line_id")
     public long lineId;
 
@@ -21,8 +24,8 @@ public class Station {
     @ColumnInfo(name="is_major_station")
     public boolean isMajorStation;
 
-    public Station(long id, long lineId, String name, int noOfPlatforms, boolean isMajorStation) {
-        this.id = id;
+    public Station(long stationNo, long lineId, String name, int noOfPlatforms, boolean isMajorStation) {
+        this.stationNo = stationNo;
         this.lineId = lineId;
         this.name = name;
         this.noOfPlatforms = noOfPlatforms;
