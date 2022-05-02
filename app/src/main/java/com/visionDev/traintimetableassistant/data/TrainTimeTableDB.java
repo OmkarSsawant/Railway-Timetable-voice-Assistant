@@ -2,14 +2,12 @@ package com.visionDev.traintimetableassistant.data;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
-import androidx.room.TypeConverter;
-import androidx.room.TypeConverters;
 
 import com.visionDev.traintimetableassistant.data.doa.TrainDAO;
 import com.visionDev.traintimetableassistant.data.models.*;
 
 @Database(
-        entities = {Line.class, Station.class, MidStation.class, Train.class},
+        entities = {Line.class, Station.class, Arrival.class, Train.class},
         version = 1
 )
 

@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class Train {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public long id;
 
     @ColumnInfo(name="start_station_id")
@@ -28,7 +28,16 @@ public class Train {
     public boolean isFastTrain;
 
     @Ignore
-    private List<MidStation> mMidStations;
+    private List<Arrival> mMidStations;
+
+    public Train(long id, long startStationId, long endStationId, String midStations, boolean isFastTrain) {
+        this.id = id;
+        this.startStationId = startStationId;
+        this.endStationId = endStationId;
+        this.midStations = midStations;
+        this.isFastTrain = isFastTrain;
+
+    }
 
     @Ignore
     public void loadMidStations(TrainDAO dao){
@@ -39,7 +48,7 @@ public class Train {
     public  boolean isInRoute(TrainDAO dao,String start,String end){
         boolean hasStartPlace = false;
 
-        for (MidStation m: mMidStations) {
+        for (Arrival m: mMidStations) {
                 if(dao.getStationName(m.station_id).equals(start)){
                     hasStartPlace = true;
                 }

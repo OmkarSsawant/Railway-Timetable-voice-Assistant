@@ -8,9 +8,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
-public class MidStation {
-    @PrimaryKey
-    public long id;
+public class Arrival {
+    @ColumnInfo
+    public long trainId;
 
     @ColumnInfo
     public long station_id;
@@ -21,4 +21,10 @@ public class MidStation {
     @ColumnInfo(name="platform_no")
     public  int platformNumber;
 
+    public Arrival(long trainId, long station_id, Timestamp arrivalTime, int platformNumber) {
+        this.trainId = trainId;
+        this.station_id = station_id;
+        this.arrivalTime = arrivalTime;
+        this.platformNumber = platformNumber;
+    }
 }
