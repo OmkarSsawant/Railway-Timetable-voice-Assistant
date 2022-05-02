@@ -2,6 +2,7 @@ package com.visionDev.traintimetableassistant;
 
 import android.content.Context;
 
+import androidx.room.Room;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -9,6 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
+
+import com.visionDev.traintimetableassistant.data.TrainTimeTableDB;
+import com.visionDev.traintimetableassistant.data.doa.TrainDAO;
+import com.visionDev.traintimetableassistant.data.models.Train;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -23,4 +32,6 @@ public class ExampleInstrumentedTest {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         assertEquals("com.visionDev.traintimetableassistant", appContext.getPackageName());
     }
+
+
 }
