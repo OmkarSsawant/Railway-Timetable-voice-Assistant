@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.visionDev.traintimetableassistant.MainActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.TrainRecyclerViewAdapter;
@@ -65,8 +67,19 @@ public class TrainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-        TrainRecyclerViewAdapter adapter = new TrainRecyclerViewAdapter(trains);
+        TrainRecyclerViewAdapter adapter = new TrainRecyclerViewAdapter(trains,((MainActivity)requireActivity()).db.getTrainDAO());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
+
+        FloatingActionButton fb = view.findViewById(R.id.add_train);
+
+        fb.setOnClickListener(w->{
+            requireActivity()
+                    .getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.host,new AddTrainFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
     }
 }

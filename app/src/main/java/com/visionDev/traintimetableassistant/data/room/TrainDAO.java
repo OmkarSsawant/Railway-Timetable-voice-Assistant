@@ -1,6 +1,7 @@
 package com.visionDev.traintimetableassistant.data.room;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -43,6 +44,10 @@ public interface TrainDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Single<Long> addTrain(Train t);
 
+
+    @Query(value = "SELECT station_no FROM station WHERE name=:stationName LIMIT 1")
+    Long getIdOfStation(String stationName);
+
     @Update
     Single<Integer> updateTrain(Train t);
 
@@ -52,9 +57,19 @@ public interface TrainDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Single<Long> addArrival(Arrival ms);
 
+    @Delete
+    void deleteArrival(Arrival ms);
+
+    @Delete
+    void deleteTrain(Train t);
+
+    @Delete
+    int deleteStation(Station s);
 
     @Query(value = "SELECT * FROM Station")
     Single<List<Station>> getStations();
 
 
+    @Query(value = "SELECT name FROM station")
+    List<String> getStationNames();
 }

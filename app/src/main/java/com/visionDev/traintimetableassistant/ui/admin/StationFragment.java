@@ -1,5 +1,6 @@
 package com.visionDev.traintimetableassistant.ui.admin;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 
@@ -68,37 +69,46 @@ public class StationFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_station_list, container, false);
     }
 
+
+   public static void showAlertDialog(Station s, LayoutInflater lf, Activity activity,StationRecyclerViewAdapter adapter){
+        final AlertDialog.Builder b = new AlertDialog.Builder(activity).setCancelable(true);
+        View v = lf.inflate(R.layout.dialog_add_station,null,false);
+        b.setView(v);
+        EditText lnet = v.findViewById(R.id.station_name_e);
+        EditText stn = v.findViewById(R.id.station_no_e);
+        EditText lnoet = v.findViewById(R.id.line_number_e);
+        EditText pc = v.findViewById(R.id.platform_count);
+        CheckBox mp = v.findViewById(R.id.isMP);
+        if(s!=null){
+            lnet.setText(s.name);
+            stn.setText(s.stationNo+"");
+            lnoet.setText(s.lineId+"");
+            pc.setText(s.noOfPlatforms+"");
+            mp.setChecked(s.isMajorStation);
+        }
+
+        b.setPositiveButton(R.string.submit,(d,z)->{
+            String name =  lnet.getText().toString();
+            int lno = Integer.parseInt( lnoet.getText().toString());
+            int sno = Integer.parseInt( stn.getText().toString());
+            int plc = Integer.parseInt( pc.getText().toString());
+            Station n = new Station(sno,lno,name,plc,mp.isChecked());
+            ((MainActivity) activity).db.getTrainDAO().addStation(n).blockingSubscribe();
+            adapter.addStation(n);
+            d.dismiss();
+        });
+        b.show();
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-        StationRecyclerViewAdapter adapter = new StationRecyclerViewAdapter(mStations);
+        StationRecyclerViewAdapter adapter = new StationRecyclerViewAdapter(mStations,(MainActivity) requireActivity());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
 
         FloatingActionButton fb = view.findViewById(R.id.add_station);
 
-        fb.setOnClickListener(w->{
-            final AlertDialog.Builder b = new AlertDialog.Builder(requireActivity()).setCancelable(true);
-            View v = getLayoutInflater().inflate(R.layout.dialog_add_station,null,false);
-            b.setView(v);
-            EditText lnet = v.findViewById(R.id.station_name_e);
-            EditText stn = v.findViewById(R.id.station_no_e);
-            EditText lnoet = v.findViewById(R.id.line_number_e);
-            EditText pc = v.findViewById(R.id.platform_count);
-            CheckBox mp = v.findViewById(R.id.isMP);
-
-            b.setPositiveButton(R.string.submit,(d,z)->{
-                String name =  lnet.getText().toString();
-                int lno = Integer.parseInt( lnoet.getText().toString());
-                int sno = Integer.parseInt( stn.getText().toString());
-                int plc = Integer.parseInt( pc.getText().toString());
-                Station n = new Station(sno,lno,name,plc,mp.isChecked());
-                ((MainActivity) requireActivity()).db.getTrainDAO().addStation(n).blockingSubscribe();
-                adapter.addStation(n);
-                d.dismiss();
-            });
-            b.show();
-        });
+        fb.setOnClickListener(w-> showAlertDialog(null,getLayoutInflater(),requireActivity(),adapter));
     }
 }
