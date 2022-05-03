@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Station {
     @PrimaryKey(autoGenerate = true)
-    public  long id;
-
     @ColumnInfo(name="station_no")
     public long stationNo;
+
+
 
     @ColumnInfo(name="line_id")
     public long lineId;

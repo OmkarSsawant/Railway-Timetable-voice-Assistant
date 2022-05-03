@@ -18,6 +18,7 @@ import com.visionDev.traintimetableassistant.data.models.Arrival;
 import com.visionDev.traintimetableassistant.data.models.Line;
 import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
+import com.visionDev.traintimetableassistant.utils.Util;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ExampleInstrumentedTest {
         List<Train> trains = dao.getTrains();
 
         for (Train t : trains){
-            t.loadMidStations(dao);
+            t.loadArrivals(dao);
         }
 
 
@@ -49,6 +50,14 @@ public class ExampleInstrumentedTest {
     }
 
 
+
+    /*
+    * ASANGOAN <-> MUMBAI CST
+    * VIRAR <-> CHURCHGATE
+    * ...
+    * New Line can be added the starting station will start from 1
+    * as the line no. differs
+    * */
     void addStations(TrainDAO dao){
         // ===============  CENTRAL LINE =========================
         dao.addStation(new Station(1,1,"Asangoan",5,false));
@@ -94,6 +103,8 @@ public class ExampleInstrumentedTest {
 
         dao.addStation(new Station(25,1,"Dadar",10,true));
 
+
+
         dao.addStation(new Station(26,1,"Parel",5,false));
         dao.addStation(new Station(27,1,"Currey Road",5,false));
         dao.addStation(new Station(28,1,"Chinch Pokali",5,false));
@@ -102,48 +113,43 @@ public class ExampleInstrumentedTest {
         dao.addStation(new Station(32,1,"Masjit",5,false));
         dao.addStation(new Station(33,1,"Mumbai CST",5,false));
 
-//        dao.addStation(new Station(15,2,"Airoli",4,false));
-//        dao.addStation(new Station(16,2,"Rable",4,false));
-//        dao.addStation(new Station(17,2,"Ghansoli",4,false));
-//        dao.addStation(new Station(18,2,"Koparkhairane",4,false));
-//        dao.addStation(new Station(19,2,"Turbhe",4,false));
 
 
         // ===============  WESTERN LINE =========================
 
 
-        dao.addStation(new Station(1,2,"Virar",5,false));
-        dao.addStation(new Station(2,2,"Nalasopara",5,false));
-        dao.addStation(new Station(3,2,"Vasai",5,false));
-        dao.addStation(new Station(4,2,"Naigoan",5,false));
-        dao.addStation(new Station(5,2,"Bhayander",5,false));
-        dao.addStation(new Station(6,2,"Mira Rd.",5,false));
-        dao.addStation(new Station(7,2,"Dahisar",5,false));
+        dao.addStation(new Station(101,2,"Virar",5,false));
+        dao.addStation(new Station(102,2,"Nalasopara",5,false));
+        dao.addStation(new Station(103,2,"Vasai",5,false));
+        dao.addStation(new Station(104,2,"Naigoan",5,false));
+        dao.addStation(new Station(105,2,"Bhayander",5,false));
+        dao.addStation(new Station(106,2,"Mira Rd.",5,false));
+        dao.addStation(new Station(107,2,"Dahisar",5,false));
 
-        dao.addStation(new Station(8,2,"Borivili",10,true));
+        dao.addStation(new Station(108,2,"Borivili",10,true));
 
-        dao.addStation(new Station(9,2,"Kandivli",5,false));
-        dao.addStation(new Station(10,2,"Malad",5,false));
-        dao.addStation(new Station(11,2,"Goregoan",5,false));
-        dao.addStation(new Station(12,2,"Jogeshwari",5,false));
+        dao.addStation(new Station(109,2,"Kandivli",5,false));
+        dao.addStation(new Station(110,2,"Malad",5,false));
+        dao.addStation(new Station(111,2,"Goregoan",5,false));
+        dao.addStation(new Station(112,2,"Jogeshwari",5,false));
 
-        dao.addStation(new Station(13,2,"Andheri",5,true));
+        dao.addStation(new Station(113,2,"Andheri",5,true));
 
-        dao.addStation(new Station(14,2,"Vile Parle",10,false));
-        dao.addStation(new Station(15,2,"Santacruz",5,false));
-        dao.addStation(new Station(16,2,"Khar rd.",5,false));
-        dao.addStation(new Station(17,2,"Bandra",5,false));
-        dao.addStation(new Station(18,2,"Mahim",5,false));
-        dao.addStation(new Station(19,2,"Matunga",5,false));
-        dao.addStation(new Station(20,2,"Dadar",5,false));
-        dao.addStation(new Station(21,2,"Elphison",5,false));
-        dao.addStation(new Station(22,2,"Lower Parel",5,false));
-        dao.addStation(new Station(23,2,"Mahalaxmi",5,false));
-        dao.addStation(new Station(24,2,"Mumbai Central",5,false));
-        dao.addStation(new Station(25,2,"Grant Rd.",5,false));
-        dao.addStation(new Station(26,2,"Charni rd.",5,false));
-        dao.addStation(new Station(27,2,"Marine Lines",5,false));
-        dao.addStation(new Station(28,2,"Church Gate",5,false));
+        dao.addStation(new Station(114,2,"Vile Parle",10,false));
+        dao.addStation(new Station(115,2,"Santacruz",5,false));
+        dao.addStation(new Station(116,2,"Khar rd.",5,false));
+        dao.addStation(new Station(117,2,"Bandra",5,false));
+        dao.addStation(new Station(118,2,"Mahim",5,false));
+        dao.addStation(new Station(119,2,"Matunga",5,false));
+        dao.addStation(new Station(120,2,"Dadar",5,false));
+        dao.addStation(new Station(121,2,"Elphison",5,false));
+        dao.addStation(new Station(122,2,"Lower Parel",5,false));
+        dao.addStation(new Station(123,2,"Mahalaxmi",5,false));
+        dao.addStation(new Station(124,2,"Mumbai Central",5,false));
+        dao.addStation(new Station(125,2,"Grant Rd.",5,false));
+        dao.addStation(new Station(126,2,"Charni rd.",5,false));
+        dao.addStation(new Station(127,2,"Marine Lines",5,false));
+        dao.addStation(new Station(128,2,"Church Gate",5,false));
 
     }
 
@@ -169,11 +175,42 @@ public class ExampleInstrumentedTest {
         dao.addArrival(new Arrival(trainId,13,Timestamp.valueOf("2022-05-02 14:30:23"),2));
         dao.addArrival(new Arrival(trainId,14,Timestamp.valueOf("2022-05-02 14:40:23"),2));
 
+
+        //Train 2
+        long trainId1 = dao.addTrain(new Train(-1,"dadar-andheri",25,13,false));
+
+        //Train 1 Arrivals
+        dao.addArrival(new Arrival(trainId1,25,Timestamp.valueOf("2022-05-02 13:20:23"),1));
+        dao.addArrival(new Arrival(trainId1,113,Timestamp.valueOf("2022-05-02 13:24:23"),2));
+
+
+        long trainId3 = dao.addTrain(new Train(-1,"kalyan-thane",1,14,false));
+
+        //Train 1 Arrivals
+        dao.addArrival(new Arrival(trainId3,14,Timestamp.valueOf("2022-05-02 15:20:23"),2));
+        dao.addArrival(new Arrival(trainId3,13,Timestamp.valueOf("2022-05-02 15:24:23"),2));
+        dao.addArrival(new Arrival(trainId3,12,Timestamp.valueOf("2022-05-02 15:27:23"),4));
+        dao.addArrival(new Arrival(trainId3,11,Timestamp.valueOf("2022-05-02 15:45:23"),4));
+        dao.addArrival(new Arrival(trainId3,10,Timestamp.valueOf("2022-05-02 15:50:23"),4));
+        dao.addArrival(new Arrival(trainId3,9,Timestamp.valueOf("2022-05-02 15:55:23"),4));
+        dao.addArrival(new Arrival(trainId3,8,Timestamp.valueOf("2022-05-02 15:59:23"),2));
+        dao.addArrival(new Arrival(trainId3,7,Timestamp.valueOf("2022-05-02 16:00:23"),2));
+        dao.addArrival(new Arrival(trainId3,6,Timestamp.valueOf("2022-05-02 16:05:23"),2));
+        dao.addArrival(new Arrival(trainId3,5,Timestamp.valueOf("2022-05-02 16:10:23"),2));
+        dao.addArrival(new Arrival(trainId3,4,Timestamp.valueOf("2022-05-02 16:15:23"),2));
+        dao.addArrival(new Arrival(trainId3,3,Timestamp.valueOf("2022-05-02 16:25:23"),2));
+        dao.addArrival(new Arrival(trainId3,2,Timestamp.valueOf("2022-05-02 16:30:23"),2));
+        dao.addArrival(new Arrival(trainId3,1,Timestamp.valueOf("2022-05-02 16:40:23"),2));
+
+
     }
+
+
+
     void createMockData(TrainDAO dao){
         //Lines
-        dao.addLine(new Line(-1,"central"));
-        dao.addLine(new Line(-1,"western"));
+        dao.addLine(new Line(1,"central"));
+        dao.addLine(new Line(2,"western"));
 
         addStations(dao);
         addTrains(dao);
@@ -189,12 +226,19 @@ public class ExampleInstrumentedTest {
         createMockData(dao);
 
 
-        List<Train> availableTrains = getAvailableTrains(dao,"Dombivli","Thane");
+
+
+        List<Train> availableTrains1 = Util.getAvailableTrains(dao,"Titwala","Mumbai CST");
         for (Train t:
-             availableTrains) {
+             availableTrains1) {
             Log.i("RESULT",t.toString());
         }
-        assert (availableTrains.size() != 0);
+        assert (availableTrains1.size() != 0);
+
+        List<Train> availableTrains2 = Util.getAvailableTrains(dao,"Mumbai CST","Titwala");
+
+        assert (availableTrains2.size() != 0);
+
 
     }
 }

@@ -1,5 +1,7 @@
 package com.visionDev.traintimetableassistant.data.models;
 
+import android.util.Log;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -7,13 +9,20 @@ import androidx.room.PrimaryKey;
 
 import com.visionDev.traintimetableassistant.data.doa.TrainDAO;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 @Entity
 public class Train {
 
     @PrimaryKey(autoGenerate = true)
-    public long id;
+    @ColumnInfo(name = "id")
+    public Long id;
 
     @ColumnInfo(name="start_station_id")
     public long startStationId;
@@ -28,9 +37,9 @@ public class Train {
     public boolean isFastTrain;
 
     @Ignore
-    private List<Arrival> mMidStations;
+    public List<Arrival> arrivals;
 
-    public Train(long id, String name,long startStationId, long endStationId, boolean isFastTrain) {
+    public Train(Long id, String name,long startStationId, long endStationId, boolean isFastTrain) {
         this.id = id;
         this.startStationId = startStationId;
         this.endStationId = endStationId;
@@ -39,22 +48,31 @@ public class Train {
     }
 
     @Ignore
-    public void loadMidStations(TrainDAO dao){
-        mMidStations = dao.getMidStationsOfTrain(id);
+    public Observable<List<Arrival>> loadArrivals(TrainDAO dao){
+        Single<List<Arrival>> arrivals = dao.getArrivals(id);
+        arrivals.blockingSubscribe(ar->{
+            Log.i("TRAIN : " , id + " " + ar.size());
+        });
+        return        arrivals.toObservable();
     }
 
     @Ignore
     public  boolean isInRoute(TrainDAO dao,String start,String end){
-        boolean hasStartPlace = false;
-
-        for (Arrival m: mMidStations) {
-                if(dao.getStationName(m.station_id).equals(start)){
-                    hasStartPlace = true;
-                }
-                if(hasStartPlace && dao.getStationName(m.station_id).equals(end)){
-                    return  true;
-                }
+        Log.i("DEBUG -- ARRIVALS", arrivals.size() + "");
+        ArrayList<String> midStations = new ArrayList<>();
+        for (Arrival m: arrivals) {
+            try{
+                midStations.add(dao.getStationName(m.station_id));
+            }catch (Exception e){
+                Log.e("ERROR for "+ m.station_id,e.getLocalizedMessage());
+            }
         }
-        return  false;
+
+        for (String m:
+             midStations) {
+            Log.i("TRAIN", name + " =>  " + m);
+        }
+        Log.i("TRAIN" , start + "->"+ midStations.indexOf(start) + " < " + end + "->" + midStations.indexOf(end) +(midStations.indexOf(start) < midStations.indexOf(end)));
+        return midStations.indexOf(start) < midStations.indexOf(end);
     }
 }

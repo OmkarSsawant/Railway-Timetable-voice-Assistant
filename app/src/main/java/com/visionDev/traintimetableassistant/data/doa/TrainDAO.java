@@ -15,40 +15,46 @@ import com.visionDev.traintimetableassistant.data.models.Train;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
+
 @Dao
 public interface TrainDAO {
 
 
     @Query(value = "SELECT * FROM Train")
-    List<Train> getTrains();
+    Single<List<Train>> getTrains();
 
     @Query(value = "SELECT name FROM Line WHERE id = :line_id")
-    String getLineName( long line_id);
+    Single<String> getLineName( long line_id);
 
     @Query(value = "SELECT * FROM Arrival WHERE trainId = :train_id ORDER BY DATE(arrival_time)")
-    List<Arrival> getMidStationsOfTrain(long train_id);
+    Single<List<Arrival>> getArrivals(long train_id);
 
 
-    @Query(value = "SELECT name FROM station WHERE id=:stationId")
-    String getStationName(long stationId);
+    @Query(value = "SELECT name FROM station WHERE station_no=:stationNo")
+    String getStationName(long stationNo);
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long addStation(Station s);
+    Single<Long> addStation(Station s);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long addTrain(Train t);
+    Single<Long> addTrain(Train t);
 
     @Update
-    int updateTrain(Train t);
+    Single<Integer> updateTrain(Train t);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long addLine(Line l);
+    Single<Long> addLine(Line l);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long addArrival(Arrival ms);
+    Single<Long> addArrival(Arrival ms);
 
 
+    @Query(value = "SELECT * FROM Station")
+    Single<List<Station>> getStations();
 
 
 }

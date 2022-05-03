@@ -6,13 +6,13 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class Line {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     public long id;
 
     @ColumnInfo
     public String name;
 
-    public Line(int id, String name) {
+    public Line(long id, String name) {
         this.id = id;
         this.name = name;
     }
