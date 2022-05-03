@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-import com.visionDev.traintimetableassistant.data.TrainTimeTableDB;
-import com.visionDev.traintimetableassistant.data.doa.TrainDAO;
+import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
+import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 import com.visionDev.traintimetableassistant.data.models.Arrival;
 import com.visionDev.traintimetableassistant.data.models.Line;
 import com.visionDev.traintimetableassistant.data.models.Station;

@@ -1,8 +1,7 @@
-package com.visionDev.traintimetableassistant.data;
+package com.visionDev.traintimetableassistant.data.room;
 
 import androidx.room.TypeConverter;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;

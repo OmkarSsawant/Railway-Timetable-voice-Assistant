@@ -4,8 +4,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
 @Entity
-public class Line {
+public class Line implements Serializable {
     @PrimaryKey
     public long id;
 
@@ -16,4 +18,5 @@ public class Line {
         this.id = id;
         this.name = name;
     }
+
 }

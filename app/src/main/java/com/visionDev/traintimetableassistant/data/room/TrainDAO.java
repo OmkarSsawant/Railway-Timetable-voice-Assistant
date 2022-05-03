@@ -1,13 +1,11 @@
-package com.visionDev.traintimetableassistant.data.doa;
+package com.visionDev.traintimetableassistant.data.room;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-import androidx.room.TypeConverters;
 import androidx.room.Update;
 
-import com.visionDev.traintimetableassistant.data.DateTimeTypeConvertors;
 import com.visionDev.traintimetableassistant.data.models.Line;
 import com.visionDev.traintimetableassistant.data.models.Arrival;
 import com.visionDev.traintimetableassistant.data.models.Station;
@@ -15,8 +13,6 @@ import com.visionDev.traintimetableassistant.data.models.Train;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
 @Dao

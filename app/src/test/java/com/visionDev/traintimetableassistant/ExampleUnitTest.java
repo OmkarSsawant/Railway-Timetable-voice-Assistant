@@ -4,11 +4,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
-
-import com.visionDev.traintimetableassistant.data.TrainTimeTableDB;
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
