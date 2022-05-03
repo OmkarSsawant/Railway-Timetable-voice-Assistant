@@ -1,12 +1,10 @@
 package com.visionDev.traintimetableassistant.ui.admin;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,9 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.visionDev.traintimetableassistant.R;
-import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
-import com.visionDev.traintimetableassistant.ui.admin.adapters.StationRecyclerViewAdapter;
+import com.visionDev.traintimetableassistant.ui.admin.adapters.TrainRecyclerViewAdapter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,6 +23,12 @@ import java.util.ArrayList;
 public class TrainFragment extends Fragment {
 
     private static final String ARG_TRAINS = "trains";
+
+    public TrainFragment with(ArrayList<Train> trains) {
+        this.trains = trains;
+        return this;
+    }
+
     private ArrayList<Train> trains;
     public TrainFragment() {
     }

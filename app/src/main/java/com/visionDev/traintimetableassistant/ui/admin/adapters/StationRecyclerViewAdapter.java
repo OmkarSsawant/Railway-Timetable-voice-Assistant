@@ -34,8 +34,14 @@ public class StationRecyclerViewAdapter extends RecyclerView.Adapter<StationRecy
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.stationName.setText(mValues.get(position).name);
-        holder.totalPlatforms.setText(mValues.get(position).noOfPlatforms);
-        holder.lineName.setText(mValues.get(position).lineId + "");
+        holder.totalPlatforms.setText("No.Of.Platforms : "+mValues.get(position).noOfPlatforms);
+        holder.lineName.setText("Line No.  : "+mValues.get(position).lineId + "");
+    }
+
+
+    public void addStation(Station s){
+        mValues.add(s);
+        notifyItemInserted(mValues.size()-1);
     }
 
     @Override

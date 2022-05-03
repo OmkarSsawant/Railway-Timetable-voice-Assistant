@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/dialog_add_line.xml" value="0.25" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/dialog_add_station.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/fragment_line.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/fragment_line_list.xml" value="0.2359375" />

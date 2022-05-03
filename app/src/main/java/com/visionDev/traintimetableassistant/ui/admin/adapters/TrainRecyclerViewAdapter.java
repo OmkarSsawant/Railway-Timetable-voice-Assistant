@@ -1,4 +1,4 @@
-package com.visionDev.traintimetableassistant.ui.admin;
+package com.visionDev.traintimetableassistant.ui.admin.adapters;
 
 import androidx.recyclerview.widget.RecyclerView;
 

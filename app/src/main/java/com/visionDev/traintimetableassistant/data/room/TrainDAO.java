@@ -22,6 +22,10 @@ public interface TrainDAO {
     @Query(value = "SELECT * FROM Train")
     Single<List<Train>> getTrains();
 
+
+    @Query(value = "SELECT * FROM Line")
+    Single<List<Line>> getLines();
+
     @Query(value = "SELECT name FROM Line WHERE id = :line_id")
     Single<String> getLineName( long line_id);
 

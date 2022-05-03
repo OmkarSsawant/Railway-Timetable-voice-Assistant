@@ -32,6 +32,11 @@ public class LineRecyclerViewAdapter extends RecyclerView.Adapter<LineRecyclerVi
 
     }
 
+
+   public void addLine(Line n){
+        mValues.add(n);
+        notifyItemInserted(mValues.size()-1);
+    }
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);

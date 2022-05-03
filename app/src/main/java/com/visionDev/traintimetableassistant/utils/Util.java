@@ -9,9 +9,12 @@ import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -39,10 +42,12 @@ public class Util {
         //Train 1
         dao.addTrain(new Train(null,name,startId,endId,false))
                 .doOnSuccess(trainId -> {
-                    for(long i = startId;i <=endId;i++){
-                        /* TODO: TimeStamp inverval maker and */
+                    Timestamp prev = Timestamp.valueOf("2022-05-03 04:24:23");
 
-                        dao.addArrival(new Arrival(trainId,i,Timestamp.valueOf("2022-05-02 13:24:23"),2));
+                    for(long i = startId;i <=endId;i++){
+                        Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                        dao.addArrival(new Arrival(trainId,i,next,2));
+                        prev = next;
                     }
                 });
 
@@ -57,7 +62,7 @@ public class Util {
      * New Line can be added the starting station will start from 1
      * as the line no. differs
      * */
-   static void addStations(TrainDAO dao){
+  public static void addStations(TrainDAO dao){
         // ===============  CENTRAL LINE =========================
         dao.addStation(new Station(1,1,"Asangoan",5,false)).blockingSubscribe(e->{});
         dao.addStation(new Station(2,1,"Vasind",5,false)).blockingSubscribe(e->{});
@@ -209,7 +214,7 @@ public class Util {
 //    }
 //
 
-    static void addLines(TrainDAO dao){
+    public static void addLines(TrainDAO dao){
         //Lines
         dao.addLine(new Line(1,"central")).blockingSubscribe();
         dao.addLine(new Line(2,"western")).blockingSubscribe();

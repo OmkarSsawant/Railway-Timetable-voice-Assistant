@@ -1,23 +1,27 @@
 package com.visionDev.traintimetableassistant.ui.admin;
 
-import android.content.Context;
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Checkable;
+import android.widget.EditText;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.visionDev.traintimetableassistant.MainActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Line;
 import com.visionDev.traintimetableassistant.data.models.Station;
-import com.visionDev.traintimetableassistant.ui.admin.adapters.LineRecyclerViewAdapter;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.StationRecyclerViewAdapter;
 
 import java.io.Serializable;
@@ -28,6 +32,12 @@ public class StationFragment extends Fragment {
 
 
     private static final String ARG_STATIONS = "train.stations";
+
+    public StationFragment with(ArrayList<Station> mStations) {
+        this.mStations = mStations;
+        return this;
+    }
+
     private ArrayList<Station> mStations;
 
     public StationFragment() {
@@ -65,5 +75,30 @@ public class StationFragment extends Fragment {
         StationRecyclerViewAdapter adapter = new StationRecyclerViewAdapter(mStations);
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
+
+        FloatingActionButton fb = view.findViewById(R.id.add_station);
+
+        fb.setOnClickListener(w->{
+            final AlertDialog.Builder b = new AlertDialog.Builder(requireActivity()).setCancelable(true);
+            View v = getLayoutInflater().inflate(R.layout.dialog_add_station,null,false);
+            b.setView(v);
+            EditText lnet = v.findViewById(R.id.station_name_e);
+            EditText stn = v.findViewById(R.id.station_no_e);
+            EditText lnoet = v.findViewById(R.id.line_number_e);
+            EditText pc = v.findViewById(R.id.platform_count);
+            CheckBox mp = v.findViewById(R.id.isMP);
+
+            b.setPositiveButton(R.string.submit,(d,z)->{
+                String name =  lnet.getText().toString();
+                int lno = Integer.parseInt( lnoet.getText().toString());
+                int sno = Integer.parseInt( stn.getText().toString());
+                int plc = Integer.parseInt( pc.getText().toString());
+                Station n = new Station(sno,lno,name,plc,mp.isChecked());
+                ((MainActivity) requireActivity()).db.getTrainDAO().addStation(n).blockingSubscribe();
+                adapter.addStation(n);
+                d.dismiss();
+            });
+            b.show();
+        });
     }
 }
