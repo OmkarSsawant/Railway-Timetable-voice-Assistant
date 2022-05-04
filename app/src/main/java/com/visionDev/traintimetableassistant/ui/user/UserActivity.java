@@ -106,6 +106,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     void speakAndAddMessage(MessageRVAdapter.Message m){
+        textToSpeech.setLanguage(isHindi ?  hindi : defa);
         messageRVAdapter.addMessage(m);
         textToSpeech.speak(m.message,TextToSpeech.QUEUE_FLUSH,null);
     }
@@ -121,7 +122,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
             getInput(ans3->{
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans3,false));
 
-                if(ans3.toLowerCase().contains("y")){
+                if(ans3.toLowerCase().contains("y") || ans3.toLowerCase().contains("ha")){
 
                     Util.getAvailableTrains(dao, src, dest, trains -> {
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getNextTrain(trains,stations,src)),true));
@@ -132,7 +133,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     next3();
                 }
             });
-        },4000);
+        },6000);
     }
 
     private void next3() {
@@ -140,13 +141,13 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         h.postDelayed(()->{
             getInput(ans4->{
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans4,false));
-                if(ans4.toLowerCase().contains("y")){
+                if(ans4.toLowerCase().contains("y") || ans4.toLowerCase().contains("ha")){
                     startConversation();
                 }else{
                     finish();
                 }
             });
-        },4000);
+        },6000);
     }
 
     void next1(String src,String dest){
@@ -156,7 +157,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
             getInput(ans2->{
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans2,false));
 
-                if(ans2.toLowerCase().contains("y")) {
+                if(ans2.toLowerCase().contains("y") || ans2.toLowerCase().contains("ha")) {
                     Util.getAvailableTrains(dao, src, dest, trains -> {
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFastTrain(trains,stations,src)),true));
                         h.postDelayed(()->{
@@ -169,7 +170,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
             });
 
-        },4000);
+        },6000);
     }
 
     void startConversation(){
@@ -204,7 +205,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                             h.postDelayed(()->{
                                 getInput(ans->{
                                     messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans,false));
-                                    if(ans.toLowerCase().contains("y")){
+                                    if(ans.toLowerCase().contains("y") || ans.toLowerCase().contains("ha")){
                                         speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.nxt_dst,isHindi ? "hi": "en"),true));
                                         h.postDelayed(()->{
                                             getInput(nd->{
@@ -224,20 +225,20 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
                                             });
-                                        },4000);
+                                        },6000);
                                     }
                                     else{
                                       next1(src,dest);
                                     }
                                 });
-                            },4000);
+                            },6000);
 
                         },10*1000);
 
 
                     });
                 });
-            },4000);
+            },6000);
 
         }), 5000);
 
@@ -258,11 +259,11 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 }
                 startConversation();
             });
-        },4000);
+        },6000);
 
     }
 
-    Locale hindi;
+    Locale hindi,defa;
     boolean isHindi=false;
     interface  OnSpeechResult{
         void onResult(String s);
@@ -270,6 +271,8 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     void getInput(OnSpeechResult listener ){
         final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 50000000);
+        defa = Locale.getDefault();
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, isHindi ? hindi : Locale.getDefault());
         speechRecognizer.startListening(speechRecognizerIntent);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
@@ -326,21 +329,16 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
     
     public String getResStringLanguage(int id, String lang){
-        //Get default locale to back it
         Resources res = getResources();
         Configuration conf = res.getConfiguration();
         Locale savedLocale = conf.locale;
-        //Retrieve resources from desired locale
         Configuration confAr = getResources().getConfiguration();
         confAr.locale = new Locale(lang);
         DisplayMetrics metrics = new DisplayMetrics();
         Resources resources = new Resources(getAssets(), metrics, confAr);
-        //Get string which you want
         String string = resources.getString(id);
-        //Restore default locale
         conf.locale = savedLocale;
         res.updateConfiguration(conf, null);
-        //return the string that you want
         return string;
     }
     @Override
@@ -424,6 +422,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         db.close();
     }
 }
