@@ -110,31 +110,139 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     String lastDest=null;
 
+    void next2(String src,String dest){
+        speakAndAddMessage(new MessageRVAdapter.Message("check for next upcoming train ? ",true));
+        h.postDelayed(()->{
+            getInput(ans3->{
+                messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans3,false));
+
+                if(ans3.toLowerCase().contains("y")){
+
+                    Util.getAvailableTrains(dao, src, dest, trains -> {
+                        speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getNextTrain(trains,stations,src)),true));
+                        h.postDelayed(this::next3,10*1000);
+                    });
+                }
+                else{
+                    next3();
+                }
+            });
+        },4000);
+    }
+
+    private void next3() {
+        speakAndAddMessage(new MessageRVAdapter.Message("Do you want to continue ? ",true));
+        h.postDelayed(()->{
+            getInput(ans4->{
+                messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans4,false));
+                if(ans4.toLowerCase().contains("y")){
+                    startConversation();
+                }else{
+                    finish();
+                }
+            });
+        },4000);
+    }
+
+    void next1(String src,String dest){
+        speakAndAddMessage(new MessageRVAdapter.Message("check for fast train ? ",true));
+        h.postDelayed(()->{
+
+            getInput(ans2->{
+                messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans2,false));
+
+                if(ans2.toLowerCase().contains("y")) {
+                    Util.getAvailableTrains(dao, src, dest, trains -> {
+                        speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFastTrain(trains,stations,src)),true));
+                        h.postDelayed(()->{
+                            next2(src, dest);
+                        },10*1000);
+                    });
+
+                }else{
+                next2(src, dest);
+                }
+            });
+
+        },4000);
+    }
+
+    void startConversation(){
+
+        speakAndAddMessage(new MessageRVAdapter.Message("Say your source Location",true));
+        h.postDelayed(() -> getInput(src->{
+
+            if(!stationNames.contains(src)){
+                Toast.makeText(this,"No such station available",Toast.LENGTH_SHORT).show();
+                startConversation();
+                return;
+            }
+
+            messageRVAdapter.addMessage(new MessageRVAdapter.Message(src,false));
+            speakAndAddMessage(new MessageRVAdapter.Message("Say your destination Location",true));
+            h.postDelayed(()->{
+                getInput(dest->{
+                    if(!stationNames.contains(dest)){
+                        Toast.makeText(this,"No such station available",Toast.LENGTH_SHORT).show();
+                        startConversation();
+                        return;
+                    }
+                    lastDest = dest;
+                    messageRVAdapter.addMessage(new MessageRVAdapter.Message(dest,false));
+
+                    Util.getAvailableTrains(dao,src,dest,trains->{
+                        speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(trains,stations,src)),true));
+
+                        h.postDelayed(()->{
+                            speakAndAddMessage(new MessageRVAdapter.Message("Do you want next station ? ",true));
+
+                            h.postDelayed(()->{
+                                getInput(ans->{
+                                    messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans,false));
+                                    if(ans.toLowerCase().contains("y")){
+                                        speakAndAddMessage(new MessageRVAdapter.Message("Say your next destination ",true));
+                                        h.postDelayed(()->{
+                                            getInput(nd->{
+                                                if(!stationNames.contains(nd)){
+                                                    Toast.makeText(this,"No such station available",Toast.LENGTH_SHORT).show();
+                                                    startConversation();
+                                                    return;
+                                                }
+
+                                                    messageRVAdapter.addMessage(new MessageRVAdapter.Message(nd,false));
+                                                    Util.getAvailableTrains(dao,lastDest,nd,nAvailableTrains->{
+                                                        speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(nAvailableTrains,stations,src)),true));
+                                                        h.postDelayed(()->{
+                                                            next1(src,dest);
+                                                        },10*1000);
+                                                    });
+
+
+                                            });
+                                        },4000);
+                                    }
+                                    else{
+                                      next1(src,dest);
+                                    }
+                                });
+                            },4000);
+
+                        },10*1000);
+
+
+                    });
+                });
+            },4000);
+
+        }), 5000);
+
+
+    }
+
     @Override
     public void onInit(int i) {
         isTtsInitialized = true;
-        speakAndAddMessage(new MessageRVAdapter.Message("Say your source Location",true));
-       h.postDelayed(() -> getInput(src->{
-           messageRVAdapter.addMessage(new MessageRVAdapter.Message(src,false));
-           speakAndAddMessage(new MessageRVAdapter.Message("Say your destination Location",true));
-           h.postDelayed(()->{
-               getInput(dest->{
-                   lastDest = dest;
-                   messageRVAdapter.addMessage(new MessageRVAdapter.Message(dest,false));
-
-                   Util.getAvailableTrains(dao,src,dest,trains->{
-                       speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(trains,stations,src)),true));
-
-
-
-
-                   });
-               });
-           },4000);
-
-       }), 5000);
-
-
+      startConversation();
     }
 
     interface  OnSpeechResult{
