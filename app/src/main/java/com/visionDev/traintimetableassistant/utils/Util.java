@@ -1,6 +1,7 @@
 package com.visionDev.traintimetableassistant.utils;
 
 import android.util.Log;
+import android.widget.Spinner;
 
 import com.visionDev.traintimetableassistant.data.models.Line;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
@@ -11,7 +12,10 @@ import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,36 +25,76 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class Util {
 
+
+   public static  Train getFastTrain(List<Train> trains){
+        for (Train t:
+             trains) {
+            if(t.isFastTrain){
+                return  t;
+            }
+        }
+        return  null;
+    }
+
+  public   static String getStationName(List<Station> stations,Long stationNo){
+        for (Station s:
+                stations) {
+            if(s.stationNo == stationNo)
+                return  s.name;
+        }
+        return  "Unknown";
+    }
     public  static List<Train> getAvailableTrains(List<Train> trains,TrainDAO dao, String start, String end){
         Log.i("DEBUG", "getAvailableTrains: " + trains.size());
         ArrayList<Train> availableTrains = new ArrayList<>();
+        List<Station> stations = dao.getStations().blockingGet();
         for (Train t : trains){
             if(t.isInRoute(dao,start,end)){
                 availableTrains.add(t);
             }
         }
-
+        //Sort Trains by arrival times
+        Collections.sort(availableTrains, (t1, t2) -> {
+            Arrival t1a = null,t2a = null;
+            for (Arrival a:
+                    t1.arrivals) {
+                if(getStationName(stations,a.station_id).equals(start)){
+                    t1a = a;
+                    break;
+                }
+            }
+            for (Arrival a:
+                    t2.arrivals) {
+                if(getStationName(stations,a.station_id).equals(start)){
+                    t2a = a;
+                    break;
+                }
+            }
+            return Long.compare(t1a.arrivalTime.getTime(), t2a.arrivalTime.getTime());
+        });
         return  availableTrains;
     }
 
 
 
-    static List<Arrival> addTrain(TrainDAO dao,String name,long startId,long endId){
+  public   static List<Arrival> addTrain(TrainDAO dao,String name,String start,String end,boolean fast){
 
+        Long startId = dao.getIdOfStation(start);
+        Long endId = dao.getIdOfStation(end);
         ArrayList<Arrival> arrivals = new ArrayList<>();
 
         //Train 1
-        dao.addTrain(new Train(null,name,startId,endId,false))
-                .doOnSuccess(trainId -> {
-                    Timestamp prev = Timestamp.valueOf("2022-05-03 04:24:23");
+       Long trainId =  dao.addTrain(new Train(null,name,startId,endId,fast))
+                .blockingGet();
+                    Log.i("TAG", "addedTrain: ==================================");
+                    //After 30 minutes
+                    Timestamp prev = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(30));
 
                     for(long i = startId;i <=endId;i++){
                         Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                        dao.addArrival(new Arrival(trainId,i,next,2));
+                        dao.addArrival(new Arrival(trainId,i,next,2)).blockingSubscribe();
                         prev = next;
                     }
-                });
-
 
         return  arrivals;
     }
@@ -220,11 +264,13 @@ public class Util {
         dao.addLine(new Line(2,"western")).blockingSubscribe();
     }
 
-    interface AvailableTrainCallback{
+
+
+    public interface AvailableTrainCallback{
        void onAvailableTrains(List<Train> trains);
     }
 
-    static void getAvailableTrains(TrainDAO dao,String start, String end , AvailableTrainCallback trainCallback){
+   public static void getAvailableTrains(TrainDAO dao,String start, String end , AvailableTrainCallback trainCallback){
         dao.getTrains()
                 .blockingSubscribe(ts -> {
                     Log.i("TAG", "onCreate: " + ts.size());
