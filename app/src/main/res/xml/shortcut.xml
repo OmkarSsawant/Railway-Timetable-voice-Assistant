@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/railroad"
+        android:shortcutId="shortcut_admin"
+        android:shortcutShortLabel="@string/admin">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.visionDev.traintimetableassistant"
+            android:targetClass="com.visionDev.traintimetableassistant.MainActivity"
+          >
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_train_24"
+        android:shortcutId="shortcut_user"
+        android:shortcutShortLabel="@string/user">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.visionDev.traintimetableassistant"
+            android:targetClass="com.visionDev.traintimetableassistant.ui.user.UserActivity"
+            >
+        </intent>
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

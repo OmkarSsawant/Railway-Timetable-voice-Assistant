@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_train_av">वर्तमान में कोई ट्रेन उपलब्ध नहीं है</string>
+    <string name="train">ट्रेन</string>
+    <string name="arr"> पर आ जाएगा </string>
+    <string name="on_p_f_n"> प्लेटफॉर्म नंबर पर </string>
+    <string name="stop_on"> और स्टॉपिंग स्टेशन हैं </string>
+    <string name="fast_train"> यह एक तेज़ ट्रेन है </string>
+    <string name="slow_train"> यह धीमी ट्रेन है</string>
+    <string name="ch_up_train">अगली आने वाली ट्रेन की जाँच करें? </string>
+    <string name="do_continue"> क्या आप जारी रखना चाहते हैं ? </string>
+    <string name="ch_fst_train">फास्ट ट्रेन की जाँच करें? </string>
+    <string name="ask_src_loc">अपना स्रोत स्थान कहें</string>
+    <string name="no_station">ऐसा कोई स्टेशन उपलब्ध नहीं है</string>
+    <string name="ask_dst_loc">अपना गंतव्य स्थान कहें</string>
+    <string name="ask_nxt_station">क्या आप अगला स्टेशन चाहते हैं?</string>
+    <string name="nxt_dst">अपना अगला गंतव्य कहें </string>
+</resources>

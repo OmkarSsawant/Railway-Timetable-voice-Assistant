@@ -1,21 +1,16 @@
 package com.visionDev.traintimetableassistant.utils;
 
 import android.util.Log;
-import android.widget.Spinner;
 
 import com.visionDev.traintimetableassistant.data.models.Line;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 import com.visionDev.traintimetableassistant.data.models.Arrival;
 import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
-import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +72,7 @@ public class Util {
 
 
 
-  public   static List<Arrival> addTrain(TrainDAO dao,String name,String start,String end,boolean fast){
+  public   static void addTrain(TrainDAO dao, String name, String start, String end, boolean fast){
 
         Long startId = dao.getIdOfStation(start);
         Long endId = dao.getIdOfStation(end);
@@ -90,13 +85,57 @@ public class Util {
                     //After 30 minutes
                     Timestamp prev = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(30));
 
-                    for(long i = startId;i <=endId;i++){
-                        Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                        dao.addArrival(new Arrival(trainId,i,next,2)).blockingSubscribe();
-                        prev = next;
-                    }
+                    if(fast){
+                        if (startId < endId) {
+                            //first station
+                                Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                dao.addArrival(new Arrival(trainId, startId, next, 2)).blockingSubscribe();
 
-        return  arrivals;
+                                int midstations = Math.round(endId-startId) ;
+                           if(midstations>1){
+                               //middle station
+                                int midStationId = Math.round(startId + Math.round(midstations /2.0));
+                               Timestamp nextm = new Timestamp(new Date(next.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                               dao.addArrival(new Arrival(trainId, midStationId, nextm, 1)).blockingSubscribe();
+                           }
+
+                            //last station
+                            Timestamp nextl = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(10)).getTime());
+                            dao.addArrival(new Arrival(trainId, endId, nextl, 1)).blockingSubscribe();
+                        } else {
+                            //first station
+                            Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                            dao.addArrival(new Arrival(trainId, startId, next, 2)).blockingSubscribe();
+
+                            int midstations = Math.round(startId-endId) ;
+                            if(midstations>1){
+                                //middle station
+                                int midStationId = Math.round(endId + Math.round(midstations /2.0));
+                                Timestamp nextm = new Timestamp(new Date(next.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                dao.addArrival(new Arrival(trainId, midStationId, nextm, 1)).blockingSubscribe();
+                            }
+
+                            //last station
+                            Timestamp nextl = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(10)).getTime());
+                            dao.addArrival(new Arrival(trainId, endId, nextl, 1)).blockingSubscribe();
+                        }
+                    }else {
+
+                        if (startId < endId) {
+                            for (long i = startId; i <= endId; i++) {
+                                Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                dao.addArrival(new Arrival(trainId, i, next, 2)).blockingSubscribe();
+                                prev = next;
+                            }
+
+                        } else {
+                            for (long i = endId; i >= startId; i--) {
+                                Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                dao.addArrival(new Arrival(trainId, i, next, 2)).blockingSubscribe();
+                                prev = next;
+                            }
+                        }
+                    }
     }
 
     /*

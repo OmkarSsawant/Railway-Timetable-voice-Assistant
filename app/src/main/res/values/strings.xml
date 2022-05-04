@@ -14,4 +14,23 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="admin">Admin</string>
+    <string name="user">User</string>
+
+
+    <string name="no_train_av">No Train Available currently</string>
+    <string name="train">The Train</string>
+    <string name="arr"> will be arriving on </string>
+    <string name="on_p_f_n"> on platform number </string>
+    <string name="stop_on"> and Stopping stations are </string>
+    <string name="fast_train"> This is a fast train </string>
+    <string name="slow_train"> This is a slow train</string>
+    <string name="ch_up_train">check for next upcoming train ? </string>
+    <string name="do_continue"> Do you want to continue ? </string>
+    <string name="ch_fst_train">check for fast train ? </string>
+    <string name="ask_src_loc">Say your source Location</string>
+    <string name="no_station">No such station available</string>
+    <string name="ask_dst_loc">Say your destination Location</string>
+    <string name="ask_nxt_station">Do you want next station ? </string>
+    <string name="nxt_dst">Say your next destination </string>
 </resources>

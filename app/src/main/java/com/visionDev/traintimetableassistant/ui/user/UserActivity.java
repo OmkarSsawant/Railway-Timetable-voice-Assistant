@@ -2,6 +2,8 @@ package com.visionDev.traintimetableassistant.ui.user;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,6 +12,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.widget.ArrayAdapter;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -38,6 +42,7 @@ import com.visionDev.traintimetableassistant.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.prefs.Preferences;
 
 public class UserActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
@@ -84,14 +89,14 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     String createMessage(Pair<Train,Arrival> res){
-        if (res==null) return  "No Train Available currently";
+        if (res==null) return  getResStringLanguage(R.string.no_train_av,isHindi ? "hi": "en");
         StringBuilder stoppingStaions = new StringBuilder();
         for (Arrival a:
              res.first.arrivals) {
             stoppingStaions.append(Util.getStationName(stations, a.station_id)).append(" , ");
         }
 
-        return  "The Train "+ res.first.name +" will be arriving on " + res.second.arrivalTime.toString() + " on platform number " + res.second.platformNumber + " and Stopping stations are " + stoppingStaions.toString() +(res.first.isFastTrain ? " This is a fast train" : "This is a slow train");
+        return  getResStringLanguage(R.string.train,isHindi ? "hi": "en") + res.first.name +getResStringLanguage(R.string.arr,isHindi ? "hi": "en") + res.second.arrivalTime.toString() + getResStringLanguage(R.string.on_p_f_n,isHindi ? "hi": "en") + res.second.platformNumber + getResStringLanguage(R.string.stop_on,isHindi ? "hi": "en") + stoppingStaions.toString() +(res.first.isFastTrain ? getResStringLanguage(R.string.fast_train,isHindi ? "hi": "en"): getResStringLanguage(R.string.slow_train,isHindi ? "hi": "en"));
     }
 
 
@@ -111,7 +116,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     String lastDest=null;
 
     void next2(String src,String dest){
-        speakAndAddMessage(new MessageRVAdapter.Message("check for next upcoming train ? ",true));
+        speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ch_up_train,isHindi ? "hi": "en"),true));
         h.postDelayed(()->{
             getInput(ans3->{
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans3,false));
@@ -131,7 +136,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     private void next3() {
-        speakAndAddMessage(new MessageRVAdapter.Message("Do you want to continue ? ",true));
+        speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.do_continue,isHindi ? "hi": "en"),true));
         h.postDelayed(()->{
             getInput(ans4->{
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans4,false));
@@ -145,7 +150,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     void next1(String src,String dest){
-        speakAndAddMessage(new MessageRVAdapter.Message("check for fast train ? ",true));
+        speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ch_fst_train,isHindi ? "hi": "en"),true));
         h.postDelayed(()->{
 
             getInput(ans2->{
@@ -169,21 +174,21 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     void startConversation(){
 
-        speakAndAddMessage(new MessageRVAdapter.Message("Say your source Location",true));
+        speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ask_src_loc,isHindi ? "hi": "en"),true));
         h.postDelayed(() -> getInput(src->{
 
             if(!stationNames.contains(src)){
-                Toast.makeText(this,"No such station available",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                 startConversation();
                 return;
             }
 
             messageRVAdapter.addMessage(new MessageRVAdapter.Message(src,false));
-            speakAndAddMessage(new MessageRVAdapter.Message("Say your destination Location",true));
+            speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ask_dst_loc,isHindi ? "hi": "en"),true));
             h.postDelayed(()->{
                 getInput(dest->{
                     if(!stationNames.contains(dest)){
-                        Toast.makeText(this,"No such station available",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                         startConversation();
                         return;
                     }
@@ -194,17 +199,17 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(trains,stations,src)),true));
 
                         h.postDelayed(()->{
-                            speakAndAddMessage(new MessageRVAdapter.Message("Do you want next station ? ",true));
+                            speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ask_nxt_station,isHindi ? "hi": "en"),true));
 
                             h.postDelayed(()->{
                                 getInput(ans->{
                                     messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans,false));
                                     if(ans.toLowerCase().contains("y")){
-                                        speakAndAddMessage(new MessageRVAdapter.Message("Say your next destination ",true));
+                                        speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.nxt_dst,isHindi ? "hi": "en"),true));
                                         h.postDelayed(()->{
                                             getInput(nd->{
                                                 if(!stationNames.contains(nd)){
-                                                    Toast.makeText(this,"No such station available",Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                                                     startConversation();
                                                     return;
                                                 }
@@ -239,19 +244,33 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
+
     @Override
     public void onInit(int i) {
         isTtsInitialized = true;
-      startConversation();
+
+        speakAndAddMessage(new MessageRVAdapter.Message("Say 1 for English or 2 for Hindi",true));
+        h.postDelayed(()->{
+            getInput(a->{
+                if(a.toLowerCase().contains("t")){
+                    isHindi = true;
+                    textToSpeech.setLanguage(hindi);
+                }
+                startConversation();
+            });
+        },4000);
+
     }
 
+    Locale hindi;
+    boolean isHindi=false;
     interface  OnSpeechResult{
         void onResult(String s);
     }
     void getInput(OnSpeechResult listener ){
         final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, isHindi ? hindi : Locale.getDefault());
         speechRecognizer.startListening(speechRecognizerIntent);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
@@ -305,7 +324,25 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     }
-
+    
+    public String getResStringLanguage(int id, String lang){
+        //Get default locale to back it
+        Resources res = getResources();
+        Configuration conf = res.getConfiguration();
+        Locale savedLocale = conf.locale;
+        //Retrieve resources from desired locale
+        Configuration confAr = getResources().getConfiguration();
+        confAr.locale = new Locale(lang);
+        DisplayMetrics metrics = new DisplayMetrics();
+        Resources resources = new Resources(getAssets(), metrics, confAr);
+        //Get string which you want
+        String string = resources.getString(id);
+        //Restore default locale
+        conf.locale = savedLocale;
+        res.updateConfiguration(conf, null);
+        //return the string that you want
+        return string;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -314,6 +351,13 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()
                 .build();
+
+        //get hindi locale
+        for (Locale l: Locale.getAvailableLocales()){
+            if(l.getDisplayName().equals("hi")){
+                hindi = l;
+            }
+        }
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
@@ -330,6 +374,10 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Util.addTrain(dao,"thane-titwala","Mumbai CST","Titwala",false);
         Util.addTrain(dao,"dombivli-thane","Dombivli","Thane",false);
         Util.addTrain(dao,"thane-dombivli","Thane","Dombivli",false);
+        Util.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",false);
+        Util.addTrain(dao,"churchgate-andheri","Church Gate","Andheri",false);
+        Util.addTrain(dao,"thane-dombivli","Thane","Dombivli",true);
+        Util.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",true);
 
         stationNames.clear();
          stationNames.addAll(dao.getStationNames());
@@ -350,6 +398,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onResume();
         if(!isTtsInitialized) {
             textToSpeech = new TextToSpeech(this, this);
+            textToSpeech.setLanguage(isHindi ? hindi : Locale.getDefault());
         }
     }
 
