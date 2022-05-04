@@ -106,7 +106,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     void speakAndAddMessage(MessageRVAdapter.Message m){
-        textToSpeech.setLanguage(isHindi ?  hindi : defa);
+        textToSpeech.setLanguage(isHindi ?  hindi : Locale.getDefault());
         messageRVAdapter.addMessage(m);
         textToSpeech.speak(m.message,TextToSpeech.QUEUE_FLUSH,null);
     }
@@ -177,7 +177,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
         speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ask_src_loc,isHindi ? "hi": "en"),true));
         h.postDelayed(() -> getInput(src->{
-
+            Log.i("TAG", "startConversation: "+src);
             if(!stationNames.contains(src)){
                 Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                 startConversation();
@@ -263,7 +263,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-    Locale hindi,defa;
+    Locale hindi;
     boolean isHindi=false;
     interface  OnSpeechResult{
         void onResult(String s);
@@ -271,9 +271,15 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
     void getInput(OnSpeechResult listener ){
         final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 50000000);
-        defa = Locale.getDefault();
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, isHindi ? hindi : Locale.getDefault());
+//        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 50000000);
+        Locale en = Locale.getDefault();
+        for (Locale l:
+             Locale.getAvailableLocales()) {
+            if(l.getDisplayName().equals("en")){
+                en = l;
+            }
+        }
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,en);
         speechRecognizer.startListening(speechRecognizerIntent);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override

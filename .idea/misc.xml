@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/drawable/chat_incoming.xml" value="0.161" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/drawable/chat_outgoing.xml" value="0.161" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/drawable/ic_train.xml" value="0.158" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/drawable/train.xml" value="0.158" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/activity_user.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/chat_message.xml" value="0.25" />
