@@ -14,6 +14,7 @@ import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,6 +66,12 @@ public class TrainRecyclerViewAdapter extends RecyclerView.Adapter<TrainRecycler
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void setTrains(ArrayList<Train> trains) {
+        mValues.clear();
+        mValues.addAll(trains);
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

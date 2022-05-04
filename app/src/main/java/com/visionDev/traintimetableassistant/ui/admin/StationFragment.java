@@ -32,33 +32,19 @@ import java.util.ArrayList;
 public class StationFragment extends Fragment {
 
 
-    private static final String ARG_STATIONS = "train.stations";
 
-    public StationFragment with(ArrayList<Station> mStations) {
-        this.mStations = mStations;
-        return this;
-    }
 
-    private ArrayList<Station> mStations;
+
+    private ArrayList<Station> mStations = new ArrayList<>();
 
     public StationFragment() {
     }
 
-    public static StationFragment newInstance(ArrayList<Station> stations) {
-        StationFragment fragment = new StationFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_STATIONS, stations);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Serializable arg =  requireArguments().getSerializable(ARG_STATIONS);
-        if(arg instanceof ArrayList){
-            mStations = (ArrayList<Station>) arg;
-        }
+
     }
 
     @Override
@@ -94,21 +80,29 @@ public class StationFragment extends Fragment {
             int plc = Integer.parseInt( pc.getText().toString());
             Station n = new Station(sno,lno,name,plc,mp.isChecked());
             ((MainActivity) activity).db.getTrainDAO().addStation(n).blockingSubscribe();
-            adapter.addStation(n);
+                adapter.addStation(n);
             d.dismiss();
         });
         b.show();
     }
+    StationRecyclerViewAdapter adapter;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-        StationRecyclerViewAdapter adapter = new StationRecyclerViewAdapter(mStations,(MainActivity) requireActivity());
+         adapter = new StationRecyclerViewAdapter(mStations,(MainActivity) requireActivity());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
 
         FloatingActionButton fb = view.findViewById(R.id.add_station);
 
         fb.setOnClickListener(w-> showAlertDialog(null,getLayoutInflater(),requireActivity(),adapter));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mStations = new ArrayList<>(((MainActivity) requireActivity()).db.getTrainDAO().getStations().blockingGet());
+        adapter.setStations(mStations);
     }
 }

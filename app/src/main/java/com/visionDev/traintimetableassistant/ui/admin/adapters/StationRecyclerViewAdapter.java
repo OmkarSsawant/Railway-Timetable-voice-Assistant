@@ -13,6 +13,7 @@ import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.ui.admin.StationFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,6 +65,14 @@ public class StationRecyclerViewAdapter extends RecyclerView.Adapter<StationRecy
     public int getItemCount() {
         return mValues.size();
     }
+
+    public void setStations(ArrayList<Station> mStations) {
+        mValues.clear();
+        mValues.addAll(mStations);
+        notifyDataSetChanged();
+    }
+
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView stationName;

@@ -96,7 +96,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
             stoppingStaions.append(Util.getStationName(stations, a.station_id)).append(" , ");
         }
 
-        return  getResStringLanguage(R.string.train,isHindi ? "hi": "en") + res.first.name +getResStringLanguage(R.string.arr,isHindi ? "hi": "en") + res.second.arrivalTime.toString() + getResStringLanguage(R.string.on_p_f_n,isHindi ? "hi": "en") + res.second.platformNumber + getResStringLanguage(R.string.stop_on,isHindi ? "hi": "en") + stoppingStaions.toString() +(res.first.isFastTrain ? getResStringLanguage(R.string.fast_train,isHindi ? "hi": "en"): getResStringLanguage(R.string.slow_train,isHindi ? "hi": "en"));
+        return  getResStringLanguage(R.string.train,isHindi ? "hi": "en") + " " + res.first.name + " " +getResStringLanguage(R.string.arr,isHindi ? "hi": "en") + " "+res.second.arrivalTime.toString() + " " + getResStringLanguage(R.string.on_p_f_n,isHindi ? "hi": "en") +" " + res.second.platformNumber + " " + getResStringLanguage(R.string.stop_on,isHindi ? "hi": "en") + " " + stoppingStaions.toString() + " " +(res.first.isFastTrain ? getResStringLanguage(R.string.fast_train,isHindi ? "hi": "en"): getResStringLanguage(R.string.slow_train,isHindi ? "hi": "en"));
     }
 
 
@@ -126,7 +126,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
                     Util.getAvailableTrains(dao, src, dest, trains -> {
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getNextTrain(trains,stations,src)),true));
-                        h.postDelayed(this::next3,10*1000);
+                        h.postDelayed(this::next3,15*1000);
                     });
                 }
                 else{
@@ -162,7 +162,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFastTrain(trains,stations,src)),true));
                         h.postDelayed(()->{
                             next2(src, dest);
-                        },10*1000);
+                        },15*1000);
                     });
 
                 }else{
@@ -220,7 +220,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(nAvailableTrains,stations,src)),true));
                                                         h.postDelayed(()->{
                                                             next1(src,dest);
-                                                        },10*1000);
+                                                        },15*1000);
                                                     });
 
 
@@ -233,7 +233,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 });
                             },6000);
 
-                        },10*1000);
+                        },15*1000);
 
 
                     });

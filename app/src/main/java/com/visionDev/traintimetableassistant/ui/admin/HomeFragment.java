@@ -39,8 +39,8 @@ public class HomeFragment extends Fragment {
 
          trainDAO = ((MainActivity)requireActivity()).db.getTrainDAO();
 
-        lineFragment = LineFragment.newInstance(new ArrayList<>(trainDAO.getLines().blockingGet()));
-        stationFragment = StationFragment.newInstance(new ArrayList<>(trainDAO.getStations().blockingGet()));
+        lineFragment = LineFragment.newInstance();
+        stationFragment = new StationFragment();
         trainFragment = TrainFragment.newInstance(new ArrayList<>(trainDAO.getTrains().blockingGet()));
     }
 
@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.host,lineFragment.with(l))
+                    .replace(R.id.host,lineFragment)
                     .addToBackStack(null)
                     .commit();
         });
@@ -75,7 +75,7 @@ public class HomeFragment extends Fragment {
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.host,stationFragment.with(new ArrayList<>(l)))
+                    .replace(R.id.host,stationFragment)
                     .addToBackStack(null)
 
                     .commit();
@@ -88,7 +88,7 @@ public class HomeFragment extends Fragment {
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.host,trainFragment.with(new ArrayList<>(l)))
+                    .replace(R.id.host,trainFragment)
                     .addToBackStack(null)
                     .commit();
         });

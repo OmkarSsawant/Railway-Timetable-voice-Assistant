@@ -30,34 +30,19 @@ import java.util.List;
 public class LineFragment extends Fragment {
 
 
-    private static final String ARG_LINES = "rail-lines";
-
-    public LineFragment with(List<Line> mLines) {
-        this.mLines = mLines;
-        return this;
-    }
-
-    private List<Line> mLines;
-
     public LineFragment() {
     }
 
 
-    public static LineFragment newInstance(ArrayList<Line> lines) {
+    public static LineFragment newInstance() {
         LineFragment fragment = new LineFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_LINES,lines);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Serializable arg =  requireArguments().getSerializable(ARG_LINES);
-        if(arg instanceof ArrayList){
-            mLines = (ArrayList<Line>) arg;
-        }
+
     }
 
     @Override
@@ -65,12 +50,12 @@ public class LineFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_line_list, container, false);
     }
-
+    LineRecyclerViewAdapter adapter;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-        LineRecyclerViewAdapter adapter = new LineRecyclerViewAdapter(mLines);
+         adapter = new LineRecyclerViewAdapter();
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
         FloatingActionButton fb = view.findViewById(R.id.floatingActionButton3);
@@ -94,5 +79,10 @@ public class LineFragment extends Fragment {
         });
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        ArrayList<Line> mLines = new ArrayList<>(((MainActivity) requireActivity()).db.getTrainDAO().getLines().blockingGet());
+        adapter.setLines(mLines);
+    }
 }

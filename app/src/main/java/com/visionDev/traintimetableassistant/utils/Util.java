@@ -65,6 +65,9 @@ public class Util {
                     break;
                 }
             }
+            if(t1a == null || t2a == null  )
+                return  0;
+
             return Long.compare(t1a.arrivalTime.getTime(), t2a.arrivalTime.getTime());
         });
         return  availableTrains;

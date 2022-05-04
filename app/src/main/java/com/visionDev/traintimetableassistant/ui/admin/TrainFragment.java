@@ -24,23 +24,15 @@ import java.util.ArrayList;
 
 public class TrainFragment extends Fragment {
 
-    private static final String ARG_TRAINS = "trains";
 
-    public TrainFragment with(ArrayList<Train> trains) {
-        this.trains = trains;
-        return this;
-    }
-
-    private ArrayList<Train> trains;
+    private ArrayList<Train> trains = new ArrayList<>();
     public TrainFragment() {
     }
 
 
     public static TrainFragment newInstance(ArrayList<Train> trains) {
         TrainFragment fragment = new TrainFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_TRAINS, trains);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -48,12 +40,7 @@ public class TrainFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            Serializable arg =  requireArguments().getSerializable(ARG_TRAINS);
-            if(arg instanceof ArrayList){
-                trains = (ArrayList<Train>) arg;
-            }
-        }
+
     }
 
     @Override
@@ -63,11 +50,12 @@ public class TrainFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_train_list, container, false);
     }
 
+    TrainRecyclerViewAdapter adapter;
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-        TrainRecyclerViewAdapter adapter = new TrainRecyclerViewAdapter(trains,((MainActivity)requireActivity()).db.getTrainDAO());
+         adapter = new TrainRecyclerViewAdapter(trains,((MainActivity)requireActivity()).db.getTrainDAO());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
 
@@ -81,5 +69,12 @@ public class TrainFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        trains = new ArrayList<>(((MainActivity) requireActivity()).db.getTrainDAO().getTrains().blockingGet());
+        adapter.setTrains(trains);
     }
 }

@@ -11,6 +11,7 @@ import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Line;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,11 +20,8 @@ import java.util.List;
  */
 public class LineRecyclerViewAdapter extends RecyclerView.Adapter<LineRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Line> mValues;
+    private final List<Line> mValues  = new ArrayList<>();
 
-    public LineRecyclerViewAdapter(List<Line> items) {
-        mValues = items;
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -37,6 +35,13 @@ public class LineRecyclerViewAdapter extends RecyclerView.Adapter<LineRecyclerVi
         mValues.add(n);
         notifyItemInserted(mValues.size()-1);
     }
+
+    public  void setLines(List<Line> l){
+        mValues.clear();
+        mValues.addAll(l);
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
