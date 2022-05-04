@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/drawable/chat_incoming.xml" value="0.161" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/drawable/chat_outgoing.xml" value="0.161" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/activity_user.xml" value="0.25" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/chat_message.xml" value="0.25" />
+        <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/chat_message_outgoing.xml" value="0.24635416666666668" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/content_user.xml" value="0.10989583333333333" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/dialog_add_line.xml" value="0.25" />
         <entry key="..\:/Users/sr sawant/AndroidStudioProjects/TrainTimeTableAssistant/app/src/main/res/layout/dialog_add_mid_station.xml" value="0.25" />
