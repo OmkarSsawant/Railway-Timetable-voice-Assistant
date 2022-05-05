@@ -106,6 +106,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     void speakAndAddMessage(MessageRVAdapter.Message m){
+        Log.i("TAG", "speakAndAddMessage: " + isHindi);
         textToSpeech.setLanguage(isHindi ?  hindi : Locale.getDefault());
         messageRVAdapter.addMessage(m);
         textToSpeech.speak(m.message,TextToSpeech.QUEUE_FLUSH,null);
@@ -256,6 +257,9 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 if(a.toLowerCase().contains("t")){
                     isHindi = true;
                     textToSpeech.setLanguage(hindi);
+                }else{
+                    isHindi = false;
+                    textToSpeech.setLanguage(en);
                 }
                 startConversation();
             });
@@ -263,7 +267,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-    Locale hindi;
+    Locale hindi,en;
     boolean isHindi=false;
     interface  OnSpeechResult{
         void onResult(String s);
@@ -272,13 +276,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         final Intent speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 //        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 50000000);
-        Locale en = Locale.getDefault();
-        for (Locale l:
-             Locale.getAvailableLocales()) {
-            if(l.getDisplayName().equals("en")){
-                en = l;
-            }
-        }
+
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,en);
         speechRecognizer.startListening(speechRecognizerIntent);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
@@ -361,13 +359,15 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
             if(l.getDisplayName().equals("hi")){
                 hindi = l;
             }
+            if(l.getDisplayName().equals("en")){
+                en = l;
+            }
         }
-
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
 
         if(PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},100);
+            Toast.makeText(this,"Please Grant Permission ",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -402,8 +402,10 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onResume();
         if(!isTtsInitialized) {
             textToSpeech = new TextToSpeech(this, this);
-            textToSpeech.setLanguage(isHindi ? hindi : Locale.getDefault());
+            textToSpeech.setLanguage(isHindi ? hindi : en);
         }
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+
     }
 
     @Override
@@ -414,6 +416,8 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
             textToSpeech.shutdown();
             isTtsInitialized  =false;
         }
+        speechRecognizer.stopListening();
+
     }
 
     @Override
