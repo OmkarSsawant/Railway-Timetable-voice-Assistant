@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TrainTimeTableAssistant" >
         <activity
-            android:name=".MainActivity"
+            android:name="com.visionDev.traintimetableassistant.MainActivity"
             android:exported="true" >
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
@@ -20,7 +20,7 @@
 <!--            </intent-filter>-->
         </activity>
         <activity
-            android:name=".ui.user.UserActivity"
+            android:name="com.visionDev.traintimetableassistant.ui.user.UserActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,6 +30,12 @@
             <meta-data android:name="android.app.shortcuts"
                 android:resource="@xml/shortcut" />
         </activity>
+
     </application>
+<queries>
+    <intent>
+        <action android:name="android.intent.action.TTS_SERVICE" />
+    </intent>
+</queries>
 
 </manifest>

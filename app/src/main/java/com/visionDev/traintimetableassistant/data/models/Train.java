@@ -61,7 +61,7 @@ public class Train implements Serializable {
         ArrayList<String> midStations = new ArrayList<>();
         for (Arrival m: arrivals) {
             try{
-                midStations.add(dao.getStationName(m.station_id));
+                midStations.add(dao.getStationName(m.station_id).toLowerCase());
             }catch (Exception e){
                 Log.e("ERROR for "+ m.station_id,e.getLocalizedMessage());
             }
@@ -71,7 +71,7 @@ public class Train implements Serializable {
              midStations) {
             Log.i("TRAIN", name + " =>  " + m);
         }
-        Log.i("TRAIN" , start + "->"+ midStations.indexOf(start) + " < " + end + "->" + midStations.indexOf(end) +(midStations.indexOf(start) < midStations.indexOf(end)));
-        return midStations.indexOf(start) < midStations.indexOf(end);
+        Log.i("TRAIN" , start + " -> "+ midStations.indexOf(start) + " < " + end + "->" + midStations.indexOf(end) +(midStations.indexOf(start) < midStations.indexOf(end)));
+        return midStations.indexOf(start.toLowerCase()) < midStations.indexOf(end.toLowerCase());
     }
 }

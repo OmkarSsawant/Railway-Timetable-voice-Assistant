@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,17 +14,11 @@ import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,7 +35,6 @@ import com.visionDev.traintimetableassistant.utils.Util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.prefs.Preferences;
 
 public class UserActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
@@ -80,7 +72,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Arrival ta = null;
         for (Arrival a:
                 t.arrivals) {
-            if(Util.getStationName(stations,a.station_id).equals(start)){
+            if(Util.getStationName(stations,a.station_id).equalsIgnoreCase(start)){
                 ta = a;
                 break;
             }
@@ -109,7 +101,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Log.i("TAG", "speakAndAddMessage: " + isHindi);
         textToSpeech.setLanguage(isHindi ?  hindi : Locale.getDefault());
         messageRVAdapter.addMessage(m);
-        textToSpeech.speak(m.message,TextToSpeech.QUEUE_FLUSH,null);
+        textToSpeech.speak(m.message,TextToSpeech.QUEUE_FLUSH,null,null);
     }
 
     final Handler h = new Handler(Looper.getMainLooper());
@@ -179,7 +171,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ask_src_loc,isHindi ? "hi": "en"),true));
         h.postDelayed(() -> getInput(src->{
             Log.i("TAG", "startConversation: "+src);
-            if(!stationNames.contains(src)){
+            if(!stationNames.contains(src.toLowerCase())){
                 Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                 startConversation();
                 return;
@@ -189,7 +181,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
             speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.ask_dst_loc,isHindi ? "hi": "en"),true));
             h.postDelayed(()->{
                 getInput(dest->{
-                    if(!stationNames.contains(dest)){
+                    if(!stationNames.contains(dest.toLowerCase())){
                         Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                         startConversation();
                         return;
@@ -210,13 +202,13 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                         speakAndAddMessage(new MessageRVAdapter.Message(getResStringLanguage(R.string.nxt_dst,isHindi ? "hi": "en"),true));
                                         h.postDelayed(()->{
                                             getInput(nd->{
-                                                if(!stationNames.contains(nd)){
+                                                messageRVAdapter.addMessage(new MessageRVAdapter.Message(nd,false));
+                                                if(!stationNames.contains(nd.toLowerCase())){
                                                     Toast.makeText(this,getResStringLanguage(R.string.no_station,isHindi ? "hi": "en"),Toast.LENGTH_SHORT).show();
                                                     startConversation();
                                                     return;
                                                 }
 
-                                                    messageRVAdapter.addMessage(new MessageRVAdapter.Message(nd,false));
                                                     Util.getAvailableTrains(dao,lastDest,nd,nAvailableTrains->{
                                                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(nAvailableTrains,stations,src)),true));
                                                         h.postDelayed(()->{
@@ -267,7 +259,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     }
 
-    Locale hindi,en;
+   final  Locale hindi = new Locale( "hin", "IND", "variant" ),en = new Locale( "en", "IND", "variant" );
     boolean isHindi=false;
     interface  OnSpeechResult{
         void onResult(String s);
@@ -354,16 +346,6 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 .allowMainThreadQueries()
                 .build();
 
-        //get hindi locale
-        for (Locale l: Locale.getAvailableLocales()){
-            if(l.getDisplayName().equals("hi")){
-                hindi = l;
-            }
-            if(l.getDisplayName().equals("en")){
-                en = l;
-            }
-        }
-
 
         if(PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.RECORD_AUDIO},100);
@@ -384,7 +366,10 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Util.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",true);
 
         stationNames.clear();
-         stationNames.addAll(dao.getStationNames());
+        for(String sn : dao.getStationNames()){
+            stationNames.add(sn.toLowerCase());
+        }
+
         stations = dao.getStations().blockingGet();
 
         RecyclerView chatList = findViewById(R.id.chat_list);

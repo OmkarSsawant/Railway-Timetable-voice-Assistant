@@ -29,17 +29,13 @@ import android.widget.Toast;
 import com.visionDev.traintimetableassistant.MainActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Arrival;
-import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.ArrivalRVAdapter;
-import com.visionDev.traintimetableassistant.ui.admin.adapters.StationRecyclerViewAdapter;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 
 public class AddTrainFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {

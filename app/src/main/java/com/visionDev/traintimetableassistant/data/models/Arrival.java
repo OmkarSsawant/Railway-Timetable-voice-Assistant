@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Entity
 public class Arrival implements Serializable {

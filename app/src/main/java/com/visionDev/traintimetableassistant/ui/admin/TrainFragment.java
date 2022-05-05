@@ -18,7 +18,6 @@ import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.TrainRecyclerViewAdapter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 

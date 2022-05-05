@@ -14,16 +14,10 @@ import static org.junit.Assert.*;
 
 import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
-import com.visionDev.traintimetableassistant.data.models.Arrival;
-import com.visionDev.traintimetableassistant.data.models.Line;
-import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.utils.Util;
 
-import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Instrumented test, which will execute on an Android device.

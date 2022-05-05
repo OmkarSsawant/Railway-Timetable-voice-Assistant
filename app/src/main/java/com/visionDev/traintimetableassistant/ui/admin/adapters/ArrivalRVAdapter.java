@@ -1,6 +1,5 @@
 package com.visionDev.traintimetableassistant.ui.admin.adapters;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

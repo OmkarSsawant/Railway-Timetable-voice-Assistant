@@ -12,19 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.visionDev.traintimetableassistant.MainActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Line;
-import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.LineRecyclerViewAdapter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class LineFragment extends Fragment {

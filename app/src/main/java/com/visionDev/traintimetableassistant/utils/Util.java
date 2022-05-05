@@ -53,14 +53,14 @@ public class Util {
             Arrival t1a = null,t2a = null;
             for (Arrival a:
                     t1.arrivals) {
-                if(getStationName(stations,a.station_id).equals(start)){
+                if(getStationName(stations,a.station_id).equalsIgnoreCase(start)){
                     t1a = a;
                     break;
                 }
             }
             for (Arrival a:
                     t2.arrivals) {
-                if(getStationName(stations,a.station_id).equals(start)){
+                if(getStationName(stations,a.station_id).equalsIgnoreCase(start)){
                     t2a = a;
                     break;
                 }
