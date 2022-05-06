@@ -356,8 +356,9 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
          dao = db.getTrainDAO();
         Util.addLines(dao);
         Util.addStations(dao);
-        Util.addTrain(dao,"titwala-thane","Titwala","Mumbai CST",false);
-        Util.addTrain(dao,"thane-titwala","Mumbai CST","Titwala",false);
+        Util.addTrain(dao,"titwala-thane","Titwala","Thane",false);
+        Util.addTrain(dao,"thane-cst","Thane","Mumbai CST",false);
+        Util.addTrain(dao,"thane-titwala","Thane","Titwala",false);
         Util.addTrain(dao,"dombivli-thane","Dombivli","Thane",false);
         Util.addTrain(dao,"thane-dombivli","Thane","Dombivli",false);
         Util.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",false);
