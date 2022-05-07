@@ -8,12 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.visionDev.traintimetableassistant.MainActivity;
+import com.visionDev.traintimetableassistant.ui.admin.AdminActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Station;
-import com.visionDev.traintimetableassistant.ui.admin.StationFragment;
+import com.visionDev.traintimetableassistant.ui.admin.screens.StationFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,11 +21,11 @@ import java.util.List;
 public class StationRecyclerViewAdapter extends RecyclerView.Adapter<StationRecyclerViewAdapter.ViewHolder> {
 
     private final List<Station> mValues;
-    private final MainActivity mainActivity;
+    private final AdminActivity adminActivity;
 
-    public StationRecyclerViewAdapter(List<Station> items,MainActivity mainActivity) {
+    public StationRecyclerViewAdapter(List<Station> items, AdminActivity adminActivity) {
         mValues = items;
-        this.mainActivity = mainActivity;
+        this.adminActivity = adminActivity;
     }
 
     @Override
@@ -43,11 +42,11 @@ public class StationRecyclerViewAdapter extends RecyclerView.Adapter<StationRecy
         holder.totalPlatforms.setText("No.Of.Platforms : "+mValues.get(position).noOfPlatforms);
         holder.lineName.setText("Line No.  : "+mValues.get(position).lineId + "");
         holder.edit.setOnClickListener(view -> {
-            StationFragment.showAlertDialog(holder.mItem,mainActivity.getLayoutInflater(),mainActivity,this);
+            StationFragment.showAlertDialog(holder.mItem, adminActivity.getLayoutInflater(), adminActivity,this);
         });
         holder.delete.setOnClickListener(view ->
         {
-             if(mainActivity.db.getTrainDAO().deleteStation(holder.mItem) != -1){
+             if(adminActivity.db.getTrainDAO().deleteStation(holder.mItem) != -1){
                  int i = mValues.indexOf(holder.mItem);
                  mValues.remove(holder.mItem);
                  notifyItemRemoved(i);
@@ -66,7 +65,7 @@ public class StationRecyclerViewAdapter extends RecyclerView.Adapter<StationRecy
         return mValues.size();
     }
 
-    public void setStations(ArrayList<Station> mStations) {
+    public void setStations(List<Station> mStations) {
         mValues.clear();
         mValues.addAll(mStations);
         notifyDataSetChanged();

@@ -1,4 +1,4 @@
-package com.visionDev.traintimetableassistant.ui.admin;
+package com.visionDev.traintimetableassistant.ui.admin.screens;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -26,7 +26,7 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.visionDev.traintimetableassistant.MainActivity;
+import com.visionDev.traintimetableassistant.ui.admin.AdminActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Arrival;
 import com.visionDev.traintimetableassistant.data.models.Train;
@@ -36,6 +36,10 @@ import com.visionDev.traintimetableassistant.ui.admin.adapters.ArrivalRVAdapter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 public class AddTrainFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
@@ -50,7 +54,7 @@ public class AddTrainFragment extends Fragment implements DatePickerDialog.OnDat
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        stationNames.clear();
-       stationNames.addAll(((MainActivity) requireActivity()).db.getTrainDAO().getStationNames());
+       stationNames.addAll(((AdminActivity) requireActivity()).db.getTrainDAO().getStationNames());
     }
 
 
@@ -99,7 +103,7 @@ public class AddTrainFragment extends Fragment implements DatePickerDialog.OnDat
         EditText tname = view.findViewById(R.id.train_name);
         CheckBox isFastC = view.findViewById(R.id.is_fast);
         RecyclerView arrivals = view.findViewById(R.id.middle_stations_list);
-         adapter = new ArrivalRVAdapter(((MainActivity) requireActivity()).db.getTrainDAO());
+         adapter = new ArrivalRVAdapter(((AdminActivity) requireActivity()).db.getTrainDAO());
         arrivals.setLayoutManager(new LinearLayoutManager(getContext()));
         arrivals.setAdapter(adapter);
 
@@ -111,7 +115,8 @@ public class AddTrainFragment extends Fragment implements DatePickerDialog.OnDat
         end.setAdapter(endAdapter);
         end.setSelection(4);
 
-        TrainDAO dao = ((MainActivity)requireActivity()).db.getTrainDAO();
+        TrainDAO dao = ((AdminActivity)requireActivity()).db.getTrainDAO();
+        final CompositeDisposable cd  = new CompositeDisposable();
         dmt.setOnClickListener(v ->
         {
             //insert train
@@ -120,15 +125,39 @@ public class AddTrainFragment extends Fragment implements DatePickerDialog.OnDat
             String name = tname.getText().toString();
             boolean isFast  = isFastC.isChecked() ;
             train = new Train(null,name,startStationId,endStationId,isFast);
-            Long id = dao.addTrain(train).blockingGet();
-            train.id = id;
-            showAlertDialog(getLayoutInflater(),requireActivity(),id,dao);
+             cd.add( dao.addTrain(train)
+             .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe(id -> {
+                train.id = id;
+                showAlertDialog(getLayoutInflater(),requireActivity(),id,dao);
+            }))
+            ;
+
         });
 
         Button done = view.findViewById(R.id.done);
         done.setOnClickListener(v->{
-            dao.updateTrain(train);
-            Toast.makeText(v.getContext(),"Suceesfully Added Train ",Toast.LENGTH_SHORT).show();
+
+            cd.add(
+            dao.updateTrain(train)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(urc->{
+                        cd.clear();
+                        Toast.makeText(v.getContext(),"Successfully Added Train ",Toast.LENGTH_SHORT).show();
+                    })
+            );
+
+            cd.add(
+                    dao.addArrivals(adapter.getArrivals())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(no->{
+                        Log.i("TAG", "onViewCreated: Added Arrivals");
+                    })
+            );
+
         });
     }
     int year,month,day;

@@ -15,10 +15,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class Util {
+public class TrainAdmin {
 
 
    public static  Train getFastTrain(List<Train> trains){
@@ -42,7 +44,7 @@ public class Util {
     public  static List<Train> getAvailableTrains(List<Train> trains,TrainDAO dao, String start, String end){
         Log.i("DEBUG", "getAvailableTrains: " + trains.size());
         ArrayList<Train> availableTrains = new ArrayList<>();
-        List<Station> stations = dao.getStations().blockingGet();
+        List<Station> stations = dao.getStations();
         for (Train t : trains){
             if(t.isInRoute(dao,start,end)){
                 availableTrains.add(t);
@@ -75,70 +77,75 @@ public class Util {
 
 
 
-  public   static void addTrain(TrainDAO dao, String name, String start, String end, boolean fast){
+  public   static Disposable addTrain(TrainDAO dao, String name, String start, String end, boolean fast){
 
         Long startId = dao.getIdOfStation(start);
         Long endId = dao.getIdOfStation(end);
         ArrayList<Arrival> arrivals = new ArrayList<>();
 
         //Train 1
-       Long trainId =  dao.addTrain(new Train(null,name,startId,endId,fast))
-                .blockingGet();
-                    Log.i("TAG", "addedTrain: ==================================");
-                    //After 30 minutes
-                    Timestamp prev = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(30));
+       return   dao.addTrain(new Train(null,name,startId,endId,fast))
+                 .observeOn(Schedulers.io())
+                 .subscribeOn(AndroidSchedulers.mainThread())
+                 .subscribe(trainId -> {
+                     Log.i("TAG", "addedTrain: ==================================");
+                     //After 30 minutes
+                     Timestamp prev = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(30));
 
-                    if(fast){
-                        if (startId < endId) {
-                            //first station
-                                Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                                dao.addArrival(new Arrival(trainId, startId, next, 2)).blockingSubscribe();
+                     if(fast){
+                         if (startId < endId) {
+                             //first station
+                             Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                             dao.addArrival(new Arrival(trainId, startId, next, 2)).blockingSubscribe();
 
-                                int midstations = Math.round(endId-startId) ;
-                           if(midstations>1){
-                               //middle station
-                                int midStationId = Math.round(startId + Math.round(midstations /2.0));
-                               Timestamp nextm = new Timestamp(new Date(next.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                               dao.addArrival(new Arrival(trainId, midStationId, nextm, 1)).blockingSubscribe();
-                           }
+                             int midstations = Math.round(endId-startId) ;
+                             if(midstations>1){
+                                 //middle station
+                                 int midStationId = Math.round(startId + Math.round(midstations /2.0));
+                                 Timestamp nextm = new Timestamp(new Date(next.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                 dao.addArrival(new Arrival(trainId, midStationId, nextm, 1)).blockingSubscribe();
+                             }
 
-                            //last station
-                            Timestamp nextl = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(10)).getTime());
-                            dao.addArrival(new Arrival(trainId, endId, nextl, 1)).blockingSubscribe();
-                        } else {
-                            //first station
-                            Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                            dao.addArrival(new Arrival(trainId, startId, next, 2)).blockingSubscribe();
+                             //last station
+                             Timestamp nextl = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(10)).getTime());
+                             dao.addArrival(new Arrival(trainId, endId, nextl, 1)).blockingSubscribe();
+                         } else {
+                             //first station
+                             Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                             dao.addArrival(new Arrival(trainId, startId, next, 2)).blockingSubscribe();
 
-                            int midstations = Math.round(startId-endId) ;
-                            if(midstations>1){
-                                //middle station
-                                int midStationId = Math.round(endId + Math.round(midstations /2.0));
-                                Timestamp nextm = new Timestamp(new Date(next.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                                dao.addArrival(new Arrival(trainId, midStationId, nextm, 1)).blockingSubscribe();
-                            }
+                             int midstations = Math.round(startId-endId) ;
+                             if(midstations>1){
+                                 //middle station
+                                 int midStationId = Math.round(endId + Math.round(midstations /2.0));
+                                 Timestamp nextm = new Timestamp(new Date(next.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                 dao.addArrival(new Arrival(trainId, midStationId, nextm, 1)).blockingSubscribe();
+                             }
 
-                            //last station
-                            Timestamp nextl = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(10)).getTime());
-                            dao.addArrival(new Arrival(trainId, endId, nextl, 1)).blockingSubscribe();
-                        }
-                    }else {
+                             //last station
+                             Timestamp nextl = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(10)).getTime());
+                             dao.addArrival(new Arrival(trainId, endId, nextl, 1)).blockingSubscribe();
+                         }
+                     }else {
 
-                        if (startId < endId) {
-                            for (long i = startId; i <= endId; i++) {
-                                Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                                dao.addArrival(new Arrival(trainId, i, next, 2)).blockingSubscribe();
-                                prev = next;
-                            }
+                         if (startId < endId) {
+                             for (long i = startId; i <= endId; i++) {
+                                 Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                 dao.addArrival(new Arrival(trainId, i, next, 2)).blockingSubscribe();
+                                 prev = next;
+                             }
 
-                        } else {
-                            for (long i = endId; i >= startId; i--) {
-                                Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
-                                dao.addArrival(new Arrival(trainId, i, next, 2)).blockingSubscribe();
-                                prev = next;
-                            }
-                        }
-                    }
+                         } else {
+                             for (long i = endId; i >= startId; i--) {
+                                 Timestamp next = new Timestamp(new Date(prev.getTime() + TimeUnit.MINUTES.toMillis(5)).getTime());
+                                 dao.addArrival(new Arrival(trainId, i, next, 2)).blockingSubscribe();
+                                 prev = next;
+                             }
+                         }
+                     }
+                 });
+
+
     }
 
     /*
@@ -312,9 +319,11 @@ public class Util {
        void onAvailableTrains(List<Train> trains);
     }
 
-   public static void getAvailableTrains(TrainDAO dao,String start, String end , AvailableTrainCallback trainCallback){
-        dao.getTrains()
-                .blockingSubscribe(ts -> {
+   public static Disposable getAvailableTrains(TrainDAO dao, String start, String end , AvailableTrainCallback trainCallback){
+       return dao.getTrains()
+               .subscribeOn(Schedulers.io())
+               .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ts -> {
                     Log.i("TAG", "onCreate: " + ts.size());
                     final ArrayList<Train> trains = new ArrayList<>(ts);
                     final ArrayList<Observable<List<Arrival>>> tasks = new ArrayList<>();
@@ -334,7 +343,7 @@ public class Util {
                                     Log.i("ARRIVAL", "onCreate: [" + i + "] " +trains.get(i).arrivals.size());
                                 }
 
-                                List<Train> availableTrains = Util.getAvailableTrains(trains,dao,start,end);
+                                List<Train> availableTrains = TrainAdmin.getAvailableTrains(trains,dao,start,end);
                                 trainCallback.onAvailableTrains(availableTrains);
                             });
                 },err->{});

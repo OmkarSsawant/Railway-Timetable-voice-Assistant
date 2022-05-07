@@ -14,7 +14,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".ui.admin.TrainFragment"
+        tools:context=".ui.admin.screens.TrainFragment"
         tools:listitem="@layout/fragment_train_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

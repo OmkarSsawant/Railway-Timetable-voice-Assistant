@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TrainTimeTableAssistant" >
         <activity
-            android:name="com.visionDev.traintimetableassistant.MainActivity"
+            android:name="com.visionDev.traintimetableassistant.ui.admin.AdminActivity"
             android:exported="true" >
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->

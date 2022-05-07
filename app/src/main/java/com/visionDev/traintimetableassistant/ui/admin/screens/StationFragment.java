@@ -1,4 +1,4 @@
-package com.visionDev.traintimetableassistant.ui.admin;
+package com.visionDev.traintimetableassistant.ui.admin.screens;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,21 +17,23 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.visionDev.traintimetableassistant.MainActivity;
+import com.visionDev.traintimetableassistant.ui.admin.AdminActivity;
 import com.visionDev.traintimetableassistant.R;
 import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.StationRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 
 public class StationFragment extends Fragment {
 
 
-
-
-
     private ArrayList<Station> mStations = new ArrayList<>();
+    final CompositeDisposable cd  =new CompositeDisposable();
 
     public StationFragment() {
     }
@@ -69,14 +71,18 @@ public class StationFragment extends Fragment {
             mp.setChecked(s.isMajorStation);
         }
 
+
         b.setPositiveButton(R.string.submit,(d,z)->{
             String name =  lnet.getText().toString();
             int lno = Integer.parseInt( lnoet.getText().toString());
             int sno = Integer.parseInt( stn.getText().toString());
             int plc = Integer.parseInt( pc.getText().toString());
             Station n = new Station(sno,lno,name,plc,mp.isChecked());
-            ((MainActivity) activity).db.getTrainDAO().addStation(n).blockingSubscribe();
-                adapter.addStation(n);
+            ((AdminActivity) activity).db.getTrainDAO()
+                    .addStation(n)
+                    .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe( k->{});
             d.dismiss();
         });
         b.show();
@@ -86,7 +92,7 @@ public class StationFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-         adapter = new StationRecyclerViewAdapter(mStations,(MainActivity) requireActivity());
+         adapter = new StationRecyclerViewAdapter(mStations,(AdminActivity) requireActivity());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
 
@@ -95,10 +101,24 @@ public class StationFragment extends Fragment {
         fb.setOnClickListener(w-> showAlertDialog(null,getLayoutInflater(),requireActivity(),adapter));
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
-        mStations = new ArrayList<>(((MainActivity) requireActivity()).db.getTrainDAO().getStations().blockingGet());
-        adapter.setStations(mStations);
+        cd.add(
+         ((AdminActivity) requireActivity()).db.getTrainDAO().observeStations()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers
+                .io())
+                .subscribe(s -> {
+                    adapter.setStations(s);
+                })
+        );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        cd.clear();
     }
 }

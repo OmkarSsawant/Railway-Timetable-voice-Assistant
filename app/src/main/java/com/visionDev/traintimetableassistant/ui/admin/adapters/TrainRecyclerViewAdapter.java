@@ -28,7 +28,7 @@ public class TrainRecyclerViewAdapter extends RecyclerView.Adapter<TrainRecycler
     public TrainRecyclerViewAdapter(List<Train> items,TrainDAO trainDAO) {
         mValues = items;
         dao = trainDAO;
-        stations  = dao.getStations().blockingGet();
+        stations  = dao.getStations();
     }
 
 
@@ -68,7 +68,7 @@ public class TrainRecyclerViewAdapter extends RecyclerView.Adapter<TrainRecycler
         return mValues.size();
     }
 
-    public void setTrains(ArrayList<Train> trains) {
+    public void setTrains(List<Train> trains) {
         mValues.clear();
         mValues.addAll(trains);
         notifyDataSetChanged();

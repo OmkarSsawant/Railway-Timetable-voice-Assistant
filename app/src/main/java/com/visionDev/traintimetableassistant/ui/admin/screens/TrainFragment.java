@@ -1,4 +1,4 @@
-package com.visionDev.traintimetableassistant.ui.admin;
+package com.visionDev.traintimetableassistant.ui.admin.screens;
 
 import android.os.Bundle;
 
@@ -8,38 +8,32 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.visionDev.traintimetableassistant.MainActivity;
+import com.visionDev.traintimetableassistant.ui.admin.AdminActivity;
 import com.visionDev.traintimetableassistant.R;
-import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.ui.admin.adapters.TrainRecyclerViewAdapter;
 
 import java.util.ArrayList;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 
 public class TrainFragment extends Fragment {
 
 
-    private ArrayList<Train> trains = new ArrayList<>();
     public TrainFragment() {
     }
 
 
-    public static TrainFragment newInstance(ArrayList<Train> trains) {
-        TrainFragment fragment = new TrainFragment();
-
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
+    public static TrainFragment newInstance() {
+        return new TrainFragment();
     }
 
     @Override
@@ -54,7 +48,7 @@ public class TrainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         RecyclerView rv = (RecyclerView) view.findViewById(R.id.recyclerView);
-         adapter = new TrainRecyclerViewAdapter(trains,((MainActivity)requireActivity()).db.getTrainDAO());
+         adapter = new TrainRecyclerViewAdapter(new ArrayList<>(),((AdminActivity)requireActivity()).db.getTrainDAO());
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
 
@@ -70,10 +64,28 @@ public class TrainFragment extends Fragment {
         });
     }
 
+
+
+    Disposable ds;
+
     @Override
     public void onResume() {
         super.onResume();
-        trains = new ArrayList<>(((MainActivity) requireActivity()).db.getTrainDAO().getTrains().blockingGet());
-        adapter.setTrains(trains);
+        ds  = ((AdminActivity)requireActivity()).db.getTrainDAO()
+                .observeTrains()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(ts -> {
+                    Log.i("TAG", "onResume: "+ts.size());
+                    adapter.setTrains(ts);
+                });
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ds.dispose();
     }
 }

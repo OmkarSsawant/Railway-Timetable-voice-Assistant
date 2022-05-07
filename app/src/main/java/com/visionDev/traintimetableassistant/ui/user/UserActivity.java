@@ -30,11 +30,13 @@ import com.visionDev.traintimetableassistant.data.models.Station;
 import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
-import com.visionDev.traintimetableassistant.utils.Util;
+import com.visionDev.traintimetableassistant.utils.TrainAdmin;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class UserActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
@@ -44,6 +46,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
      boolean isTtsInitialized=false;
      TrainDAO dao;
       List<Station> stations;
+      final CompositeDisposable cd = new CompositeDisposable();
 
     Pair<Train, Arrival> getFirstTrain(List<Train> trainList, List<Station> stations, String start){
         if(trainList.isEmpty()) return  null;
@@ -62,7 +65,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
     Pair<Train, Arrival> getFastTrain(List<Train> trainList, List<Station> stations, String start){
         if(trainList.isEmpty()) return  null;
-        Train ft = Util.getFastTrain(trainList);
+        Train ft = TrainAdmin.getFastTrain(trainList);
         if(ft==null) return  null;
         return  withArrival(ft,stations,start);
     }
@@ -72,7 +75,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         Arrival ta = null;
         for (Arrival a:
                 t.arrivals) {
-            if(Util.getStationName(stations,a.station_id).equalsIgnoreCase(start)){
+            if(TrainAdmin.getStationName(stations,a.station_id).equalsIgnoreCase(start)){
                 ta = a;
                 break;
             }
@@ -85,7 +88,7 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         StringBuilder stoppingStaions = new StringBuilder();
         for (Arrival a:
              res.first.arrivals) {
-            stoppingStaions.append(Util.getStationName(stations, a.station_id)).append(" , ");
+            stoppingStaions.append(TrainAdmin.getStationName(stations, a.station_id)).append(" , ");
         }
 
         return  getResStringLanguage(R.string.train,isHindi ? "hi": "en") + " " + res.first.name + " " +getResStringLanguage(R.string.arr,isHindi ? "hi": "en") + " "+res.second.arrivalTime.toString() + " " + getResStringLanguage(R.string.on_p_f_n,isHindi ? "hi": "en") +" " + res.second.platformNumber + " " + getResStringLanguage(R.string.stop_on,isHindi ? "hi": "en") + " " + stoppingStaions.toString() + " " +(res.first.isFastTrain ? getResStringLanguage(R.string.fast_train,isHindi ? "hi": "en"): getResStringLanguage(R.string.slow_train,isHindi ? "hi": "en"));
@@ -116,11 +119,11 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans3,false));
 
                 if(ans3.toLowerCase().contains("y") || ans3.toLowerCase().contains("ha")){
-
-                    Util.getAvailableTrains(dao, src, dest, trains -> {
+cd.add(
+                    TrainAdmin.getAvailableTrains(dao, src, dest, trains -> {
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getNextTrain(trains,stations,src)),true));
                         h.postDelayed(this::next3,15*1000);
-                    });
+                    }) );
                 }
                 else{
                     next3();
@@ -151,12 +154,14 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 messageRVAdapter.addMessage(new MessageRVAdapter.Message(ans2,false));
 
                 if(ans2.toLowerCase().contains("y") || ans2.toLowerCase().contains("ha")) {
-                    Util.getAvailableTrains(dao, src, dest, trains -> {
+                    cd.add(
+                    TrainAdmin.getAvailableTrains(dao, src, dest, trains -> {
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFastTrain(trains,stations,src)),true));
                         h.postDelayed(()->{
                             next2(src, dest);
                         },15*1000);
-                    });
+                    })
+                    );
 
                 }else{
                 next2(src, dest);
@@ -188,8 +193,8 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     }
                     lastDest = dest;
                     messageRVAdapter.addMessage(new MessageRVAdapter.Message(dest,false));
-
-                    Util.getAvailableTrains(dao,src,dest,trains->{
+cd.add(
+                    TrainAdmin.getAvailableTrains(dao,src,dest, trains->{
                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(trains,stations,src)),true));
 
                         h.postDelayed(()->{
@@ -208,13 +213,14 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                                     startConversation();
                                                     return;
                                                 }
-
-                                                    Util.getAvailableTrains(dao,lastDest,nd,nAvailableTrains->{
+                        cd.add(
+                                                    TrainAdmin.getAvailableTrains(dao,lastDest,nd, nAvailableTrains->{
                                                         speakAndAddMessage(new MessageRVAdapter.Message(createMessage(getFirstTrain(nAvailableTrains,stations,src)),true));
                                                         h.postDelayed(()->{
                                                             next1(src,dest);
                                                         },15*1000);
-                                                    });
+                                                    })
+                        );
 
 
                                             });
@@ -229,7 +235,8 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         },15*1000);
 
 
-                    });
+                    })
+);
                 });
             },6000);
 
@@ -354,24 +361,24 @@ public class UserActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
 
          dao = db.getTrainDAO();
-        Util.addLines(dao);
-        Util.addStations(dao);
-        Util.addTrain(dao,"titwala-thane","Titwala","Thane",false);
-        Util.addTrain(dao,"thane-cst","Thane","Mumbai CST",false);
-        Util.addTrain(dao,"thane-titwala","Thane","Titwala",false);
-        Util.addTrain(dao,"dombivli-thane","Dombivli","Thane",false);
-        Util.addTrain(dao,"thane-dombivli","Thane","Dombivli",false);
-        Util.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",false);
-        Util.addTrain(dao,"churchgate-andheri","Church Gate","Andheri",false);
-        Util.addTrain(dao,"thane-dombivli","Thane","Dombivli",true);
-        Util.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",true);
+        TrainAdmin.addLines(dao);
+        TrainAdmin.addStations(dao);
+        TrainAdmin.addTrain(dao,"titwala-thane","Titwala","Thane",false);
+        TrainAdmin.addTrain(dao,"thane-cst","Thane","Mumbai CST",false);
+        TrainAdmin.addTrain(dao,"thane-titwala","Thane","Titwala",false);
+        TrainAdmin.addTrain(dao,"dombivli-thane","Dombivli","Thane",false);
+        TrainAdmin.addTrain(dao,"thane-dombivli","Thane","Dombivli",false);
+        TrainAdmin.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",false);
+        TrainAdmin.addTrain(dao,"churchgate-andheri","Church Gate","Andheri",false);
+        TrainAdmin.addTrain(dao,"thane-dombivli","Thane","Dombivli",true);
+        TrainAdmin.addTrain(dao,"andheri-churchgate","Andheri","Church Gate",true);
 
         stationNames.clear();
         for(String sn : dao.getStationNames()){
             stationNames.add(sn.toLowerCase());
         }
 
-        stations = dao.getStations().blockingGet();
+        stations = dao.getStations();
 
         RecyclerView chatList = findViewById(R.id.chat_list);
         chatList.setLayoutManager(new LinearLayoutManager(this));

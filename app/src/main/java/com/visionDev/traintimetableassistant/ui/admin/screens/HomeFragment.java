@@ -1,4 +1,4 @@
-package com.visionDev.traintimetableassistant.ui.admin;
+package com.visionDev.traintimetableassistant.ui.admin.screens;
 
 import android.os.Bundle;
 
@@ -7,20 +7,15 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.visionDev.traintimetableassistant.MainActivity;
+import com.visionDev.traintimetableassistant.ui.admin.AdminActivity;
 import com.visionDev.traintimetableassistant.R;
-import com.visionDev.traintimetableassistant.data.models.Line;
-import com.visionDev.traintimetableassistant.data.models.Station;
-import com.visionDev.traintimetableassistant.data.models.Train;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 
 public class HomeFragment extends Fragment {
@@ -33,15 +28,17 @@ public class HomeFragment extends Fragment {
     private TrainFragment trainFragment;
     private TrainDAO trainDAO;
 
+    final CompositeDisposable disposables = new CompositeDisposable();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-         trainDAO = ((MainActivity)requireActivity()).db.getTrainDAO();
+         trainDAO = ((AdminActivity)requireActivity()).db.getTrainDAO();
 
         lineFragment = LineFragment.newInstance();
         stationFragment = new StationFragment();
-        trainFragment = TrainFragment.newInstance(new ArrayList<>(trainDAO.getTrains().blockingGet()));
+                    trainFragment = TrainFragment.newInstance();
     }
 
     @Override
@@ -58,8 +55,6 @@ public class HomeFragment extends Fragment {
         CardView trains = view.findViewById(R.id.trains);
 
         lines.setOnClickListener(v -> {
-            List<Line> l = trainDAO.getLines().blockingGet();
-            Log.i("TAG", "onViewCreated: " + l.size());
 
             requireActivity()
                     .getSupportFragmentManager()
@@ -70,8 +65,6 @@ public class HomeFragment extends Fragment {
         });
 
         stations.setOnClickListener(v -> {
-            List<Station> l = trainDAO.getStations().blockingGet();
-            Log.i("TAG", "onViewCreated: " + l.size());
             requireActivity()
                     .getSupportFragmentManager()
                     .beginTransaction()
@@ -82,8 +75,6 @@ public class HomeFragment extends Fragment {
         });
 
         trains.setOnClickListener(v -> {
-            List<Train> l = trainDAO.getTrains().blockingGet();
-            Log.i("TAG", "onViewCreated: " + l.size());
 
             requireActivity()
                     .getSupportFragmentManager()
@@ -92,5 +83,11 @@ public class HomeFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposables.clear();
     }
 }

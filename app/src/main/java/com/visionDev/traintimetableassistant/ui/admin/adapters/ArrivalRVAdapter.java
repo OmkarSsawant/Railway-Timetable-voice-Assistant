@@ -19,7 +19,11 @@ import java.util.List;
 public class ArrivalRVAdapter extends RecyclerView.Adapter<ArrivalRVAdapter.ArrivalViewHolder> {
 
 
-    ArrayList<Arrival> arrivals = new ArrayList<>();
+    public ArrayList<Arrival> getArrivals() {
+        return arrivals;
+    }
+
+    private ArrayList<Arrival> arrivals = new ArrayList<>();
     private final List<Station> stations;
 
     String getStationName(Long stationNo){
@@ -32,7 +36,7 @@ public class ArrivalRVAdapter extends RecyclerView.Adapter<ArrivalRVAdapter.Arri
     }
 
     public  ArrivalRVAdapter(TrainDAO dao){
-        stations  = dao.getStations().blockingGet();
+        stations  = dao.getStations();
     }
 
     @NonNull

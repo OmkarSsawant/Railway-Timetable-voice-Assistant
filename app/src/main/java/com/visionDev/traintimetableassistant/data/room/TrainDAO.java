@@ -14,21 +14,22 @@ import com.visionDev.traintimetableassistant.data.models.Train;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 
 @Dao
 public interface TrainDAO {
 
-
     @Query(value = "SELECT * FROM Train")
     Single<List<Train>> getTrains();
 
+    @Query(value = "SELECT * FROM Train")
+    Flowable<List<Train>> observeTrains();
+
 
     @Query(value = "SELECT * FROM Line")
-    Single<List<Line>> getLines();
+    Flowable<List<Line>> observeLines();
 
-    @Query(value = "SELECT name FROM Line WHERE id = :line_id")
-    Single<String> getLineName( long line_id);
 
     @Query(value = "SELECT * FROM Arrival WHERE trainId = :train_id ORDER BY DATE(arrival_time)")
     Single<List<Arrival>> getArrivals(long train_id);
@@ -36,6 +37,7 @@ public interface TrainDAO {
 
     @Query(value = "SELECT name FROM station WHERE station_no=:stationNo")
     String getStationName(long stationNo);
+
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -57,8 +59,9 @@ public interface TrainDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Single<Long> addArrival(Arrival ms);
 
-    @Delete
-    void deleteArrival(Arrival ms);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Single<Void> addArrivals(List<Arrival> ms);
+
 
     @Delete
     void deleteTrain(Train t);
@@ -67,8 +70,10 @@ public interface TrainDAO {
     int deleteStation(Station s);
 
     @Query(value = "SELECT * FROM Station")
-    Single<List<Station>> getStations();
+    List<Station> getStations();
 
+    @Query(value = "SELECT * FROM Station")
+    Flowable<List<Station>> observeStations();
 
     @Query(value = "SELECT name FROM station")
     List<String> getStationNames();

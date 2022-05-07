@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 import com.visionDev.traintimetableassistant.data.room.TrainTimeTableDB;
 import com.visionDev.traintimetableassistant.data.room.TrainDAO;
 import com.visionDev.traintimetableassistant.data.models.Train;
-import com.visionDev.traintimetableassistant.utils.Util;
+import com.visionDev.traintimetableassistant.utils.TrainAdmin;
 
 import java.util.List;
 
@@ -35,12 +35,12 @@ public class ExampleInstrumentedTest {
 
 
     void createMockData(TrainDAO dao){
-        Util.addLines(dao);
-        Util.addStations(dao);
-        Util.addTrain(dao,"titwala-thane","Titwala","Mumbai CST",false);
-        Util.addTrain(dao,"thane-titwala","Mumbai CST","Titwala",false);
-        Util.addTrain(dao,"dombivli-thane","Dombivli","Thane",false);
-        Util.addTrain(dao,"thane-dombivli","Thane","Dombivli",false);
+        TrainAdmin.addLines(dao);
+        TrainAdmin.addStations(dao);
+        TrainAdmin.addTrain(dao,"titwala-thane","Titwala","Mumbai CST",false);
+        TrainAdmin.addTrain(dao,"thane-titwala","Mumbai CST","Titwala",false);
+        TrainAdmin.addTrain(dao,"dombivli-thane","Dombivli","Thane",false);
+        TrainAdmin.addTrain(dao,"thane-dombivli","Thane","Dombivli",false);
 
     }
 
@@ -56,7 +56,7 @@ public class ExampleInstrumentedTest {
 
 
 
-        List<Train> availableTrains1 = Util.getAvailableTrains(dao.getTrains().blockingGet(),dao,"Titwala","Mumbai CST");
+        List<Train> availableTrains1 = TrainAdmin.getAvailableTrains(dao.getTrains().blockingGet(),dao,"Titwala","Mumbai CST");
         for (Train t:
              availableTrains1) {
             Log.i("RESULT1",t.toString());
@@ -70,12 +70,12 @@ public class ExampleInstrumentedTest {
         Train st = availableTrains1.get(1);
 
         //Fast Train
-        Train ftt = Util.getFastTrain(availableTrains1);
+        Train ftt = TrainAdmin.getFastTrain(availableTrains1);
 
 
 
 
-        List<Train> availableTrains2 = Util.getAvailableTrains(dao.getTrains().blockingGet(),dao,"Mumbai CST","Titwala");
+        List<Train> availableTrains2 = TrainAdmin.getAvailableTrains(dao.getTrains().blockingGet(),dao,"Mumbai CST","Titwala");
         for (Train t:
                 availableTrains2) {
             Log.i("RESULT2",t.toString());
