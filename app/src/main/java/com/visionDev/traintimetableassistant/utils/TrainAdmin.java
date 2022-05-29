@@ -67,7 +67,7 @@ public class TrainAdmin {
                     break;
                 }
             }
-            if(t1a == null || t2a == null  )
+            if(t1a == null || t1a.arrivalTime == null || t2a == null  || t2a.arrivalTime == null )
                 return  0;
 
             return Long.compare(t1a.arrivalTime.getTime(), t2a.arrivalTime.getTime());
